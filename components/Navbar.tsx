@@ -1,57 +1,97 @@
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaRegUserCircle } from 'react-icons/fa';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { BiLogOut } from 'react-icons/bi';
+import Button from './Button';
+import { navigationItems } from '@/constants/constants';
+import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 const Navbar = () => {
+  const isUser = true;
+  const pathname = usePathname();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Відстежуємо скролінг
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10); // Змінюємо фон, якщо прокручено більше 10px
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll); // Очищення при розмонтуванні
+  }, []);
+
   return (
-    <nav className='fixed top-0 left-0 w-full bg-black z-50 flex items-center justify-between'>
-      <div className='max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8'>
+    <header
+      className={`fixed top-0 left-0 w-full ${
+        pathname === '/' && !isScrolled ? 'bg-transparent' : 'bg-neutrals-60'
+      } z-50 hidden items-center justify-between md:flex transition-colors duration-500 ease-in-out`}
+    >
+      <div className='container'>
         <div className='flex items-center justify-between h-16'>
-          {/* Лівий блок: Логотип */}
           <div className='flex items-center'>
             <Link href='/' className='flex items-center'>
-              <div className='text-2xl font-bold text-neutrals-white flex items-center gap-2'>
+              <div className='text-neutrals-white flex items-center gap-2'>
                 <Image
                   src='/assets/logo.png'
                   alt='Logo'
-                  width={36}
-                  height={36}
+                  width={34}
+                  height={34}
+                  className='w-8 h-8 sm:w-9 sm:h-9'
                 />
-                <p>CoLiver</p>
+                <p className='text-xl max-[458px]:text-xl sm:h3B'>CoLiver</p>
               </div>
             </Link>
+          </div>
 
-            {/* Блок із випадаючим списком */}
-            <div className='ml-6'>
-              <Select>
-                <SelectTrigger className='w-[180px] text-neutrals-white bg-black border-neutrals-40'>
-                  <SelectValue placeholder='Lviv' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='lviv'>Lviv</SelectItem>
-                  <SelectItem value='kyiv'>Kyiv</SelectItem>
-                  <SelectItem value='odesa'>Odesa</SelectItem>
-                </SelectContent>
-              </Select>
+          <nav className='flex items-center justify-between'>
+            <div className='flex items-center gap-4'>
+              {navigationItems.map((link) => (
+                <Link
+                  href={link.route}
+                  key={link.label}
+                  className={`sh3S text-neutrals-white transition-all hover:text-primary-60 ${
+                    link.route === pathname ? 'text-primary-60' : ''
+                  } `}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
-          </div>
-
-          {/* Правий блок: Іконка профілю */}
-          <div className='flex items-center'>
-            <Link href='/profile'>
-              <FaRegUserCircle className='text-neutrals-white w-8 h-8 hover:text-prime-60 transition-colors' />
-            </Link>
-          </div>
+            <div className='flex items-center'>
+              {isUser ? (
+                <div className='flex justify-center'>
+                  <Button className='!bg-transparent'>
+                    <Image
+                      src='/assets/logout.svg'
+                      alt='Logout'
+                      width={20}
+                      height={20}
+                      className='text-neutrals-white w-5 h-5 sm:w-7 sm:h-7'
+                    />
+                  </Button>
+                  <Link href='/profile'>
+                    <Image
+                      src='/assets/user.svg'
+                      alt='User'
+                      width={20}
+                      height={20}
+                      className='text-neutrals-white w-5 h-5 sm:w-7 sm:h-7'
+                    />
+                  </Link>
+                </div>
+              ) : (
+                <Link href='/login' className='text-neutrals-white sh3B'>
+                  Login
+                </Link>
+              )}
+            </div>
+          </nav>
         </div>
       </div>
-    </nav>
+    </header>
   );
 };
 

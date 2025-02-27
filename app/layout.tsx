@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Open_Sans } from 'next/font/google'; // Імпортуємо Open Sans
 import './globals.css';
 import Navbar from '@/components/Navbar';
+import MobileNavigation from '@/components/MobileNavigation';
 
 // Налаштування шрифта Open Sans
 const openSans = Open_Sans({
@@ -22,9 +23,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${openSans.variable} antialiased`}>
+      <body className={`${openSans.variable} antialiased bg-neutrals-white`}>
         <Navbar />
         <main>{children}</main>
+        <MobileNavigation />
       </body>
     </html>
   );

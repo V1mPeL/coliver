@@ -1,83 +1,71 @@
+/* globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  * {
-    @apply text-neutrals-white border-none outline-primary-60;
+@layer components {
+  .container {
+    @apply max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8;
   }
-  body {
-    @apply bg-neutrals-90 text-neutrals-black;
+  .container-sm {
+    @apply max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8; /* Менша ширина */
   }
-}
+  /* H1 */
+  .h1B {
+    @apply font-bold text-[40px]; /* 700, 40px */
+  }
+  .h1S {
+    @apply font-semibold text-[40px]; /* 600, 40px */
+  }
 
-.h1B {
-  font-weight: 700;
-  font-size: 40px;
-}
-.h1S {
-  font-weight: 600;
-  font-size: 40px;
-}
+  /* H2 */
+  .h2B {
+    @apply font-bold text-[36px]; /* 700, 36px */
+  }
+  .h2S {
+    @apply font-semibold text-[36px]; /* 600, 36px */
+  }
 
-.h2B {
-  font-weight: 700;
-  font-size: 36px;
-}
-.h2B {
-  font-weight: 600;
-  font-size: 36px;
-}
-.h3B {
-  font-weight: 700;
-  font-size: 32px;
-}
-.h3S {
-  font-weight: 600;
-  font-size: 32px;
-}
+  /* H3 */
+  .h3B {
+    @apply font-bold text-[32px] max-[600px]:text-[28px]; /* 700, 32px, 28px на <600px */
+  }
+  .h3S {
+    @apply font-semibold text-[32px]; /* 600, 32px */
+  }
 
-.h1B {
-  font-weight: 700;
-  font-size: 40px;
-}
+  /* SH1 */
+  .sh1B {
+    @apply font-bold text-[28px]; /* 700, 28px */
+  }
+  .sh1S {
+    @apply font-semibold text-[28px]; /* 600, 28px */
+  }
 
-.sh1B {
-  font-weight: 700;
-  font-size: 28px;
-}
-.sh1s {
-  font-weight: 600;
-  font-size: 28px;
-}
+  /* SH2 */
+  .sh2B {
+    @apply font-bold text-[24px]; /* 700, 24px */
+  }
+  .sh2S {
+    @apply font-semibold text-[24px]; /* 600, 24px */
+  }
 
-.sh2B {
-  font-weight: 700;
-  font-size: 24px;
-}
-.sh2s {
-  font-weight: 600;
-  font-size: 24px;
-}
+  /* SH3 */
+  .sh3B {
+    @apply font-bold text-[20px]; /* 700, 20px */
+  }
+  .sh3S {
+    @apply font-semibold text-[20px]; /* 600, 20px */
+  }
 
-.sh3B {
-  font-weight: 700;
-  font-size: 20px;
-}
-.sh3s {
-  font-weight: 600;
-  font-size: 20px;
-}
-
-.bodyB {
-  font-weight: 700;
-  font-size: 16px;
-}
-.bodyS {
-  font-weight: 600;
-  font-size: 16px;
-}
-.bodyR {
-  font-weight: 400;
-  font-size: 16px;
+  /* Body */
+  .bodyB {
+    @apply font-bold text-[16px]; /* 700, 16px */
+  }
+  .bodyS {
+    @apply font-semibold text-[16px]; /* 600, 16px */
+  }
+  .bodyR {
+    @apply font-normal text-[16px]; /* 400, 16px */
+  }
 }
