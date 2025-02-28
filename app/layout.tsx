@@ -1,19 +1,17 @@
 import type { Metadata } from 'next';
-import { Open_Sans } from 'next/font/google'; // Імпортуємо Open Sans
+import { Open_Sans } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
-import MobileNavigation from '@/components/MobileNavigation';
 
-// Налаштування шрифта Open Sans
 const openSans = Open_Sans({
-  variable: '--font-open-sans', // Змінна для використання у CSS
-  subsets: ['latin'], // Підмножина символів
-  weight: ['400', '600', '700'], // Вказуємо ваги шрифта (можна додати інші, наприклад, 300, 600 тощо)
+  variable: '--font-open-sans',
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
 });
 
 export const metadata: Metadata = {
-  title: 'CoLiver', // Змінено назву на назву вашого сайту
-  description: 'A platform for co-living and community sharing', // Оновлено опис
+  title: 'CoLiver',
+  description: 'A platform for co-living and community sharing',
 };
 
 export default function RootLayout({
@@ -26,7 +24,6 @@ export default function RootLayout({
       <body className={`${openSans.variable} antialiased bg-neutrals-white`}>
         <Navbar />
         <main>{children}</main>
-        <MobileNavigation />
       </body>
     </html>
   );
