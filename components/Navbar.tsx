@@ -52,7 +52,7 @@ const Navbar = () => {
                 <Link
                   href={link.route}
                   key={link.label}
-                  className={`sh3S text-neutrals-white transition-all hover:text-primary-60 ${
+                  className={`sh3S text-neutrals-white transition-all duration-300 hover:text-primary-60  ${
                     link.route === pathname ? 'text-primary-60' : ''
                   } `}
                 >
