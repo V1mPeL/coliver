@@ -68,12 +68,12 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <nav className='hidden md:flex items-center justify-between'>
-            <div className='flex items-center gap-6'>
+            <div className='flex items-center gap-4'>
               {navigationItems.map((link) => (
                 <Link
                   href={link.route}
                   key={link.label}
-                  className={`flex justify-between items-center gap-2 sh3S text-neutrals-white transition-all duration-300 hover:text-primary-60 ${
+                  className={`flex justify-between items-center gap-2 sh3s text-neutrals-white transition-all duration-300 hover:text-primary-60 ${
                     link.route === pathname ? 'text-primary-60' : ''
                   } `}
                 >
