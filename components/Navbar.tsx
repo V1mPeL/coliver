@@ -6,6 +6,9 @@ import { navigationItems } from '@/constants/constants';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
+import { AiOutlineUser } from 'react-icons/ai';
+import { BiLogOut } from 'react-icons/bi';
+
 const Navbar = () => {
   const isUser = true;
   const pathname = usePathname();
@@ -77,12 +80,7 @@ const Navbar = () => {
                     link.route === pathname ? 'text-primary-60' : ''
                   } `}
                 >
-                  <Image
-                    src={link.imageUrl}
-                    alt={link.label}
-                    width={24}
-                    height={24}
-                  />
+                  <link.icon className='w-6 h-6' />
                   {link.label}
                 </Link>
               ))}
@@ -92,25 +90,15 @@ const Navbar = () => {
                 <div className='flex justify-center gap-4'>
                   <Link
                     href='/profile'
-                    className='flex justify-between items-center gap-2 sh3S text-neutrals-white transition-all duration-300 hover:text-primary-60 '
+                    className={`flex justify-between items-center gap-2 sh3s text-neutrals-white transition-all duration-300 hover:text-primary-60 ${
+                      pathname == '/profile' ? 'text-primary-60' : ''
+                    } `}
                   >
-                    <Image
-                      src='/assets/user.svg'
-                      alt='User'
-                      width={20}
-                      height={20}
-                      className='text-neutrals-white w-5 h-5 sm:w-7 sm:h-7'
-                    />
-                    <p>Profile</p>
+                    <AiOutlineUser className='w-6 h-6' />
+                    Profile
                   </Link>
-                  <Button className='!bg-transparent'>
-                    <Image
-                      src='/assets/logout.svg'
-                      alt='Logout'
-                      width={20}
-                      height={20}
-                      className='text-neutrals-white w-5 h-5 sm:w-7 sm:h-7'
-                    />
+                  <Button className='!bg-transparent sh3S text-neutrals-white transition-all duration-300 hover:text-primary-60'>
+                    <BiLogOut className='w-6 h-6' />
                   </Button>
                 </div>
               ) : (
@@ -160,12 +148,12 @@ const Navbar = () => {
                   link.route === pathname ? 'text-primary-60' : ''
                 } `}
               >
-                <Image
+                {/* <Image
                   src={link.imageUrl}
                   alt={link.label}
                   width={24}
                   height={24}
-                />
+                /> */}
                 {link.label}
               </Link>
             ))}

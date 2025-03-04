@@ -1,16 +1,22 @@
+import {
+  AiOutlineSearch,
+  AiOutlineAppstoreAdd,
+  AiOutlineHome,
+} from 'react-icons/ai';
+
 export const navigationItems = [
   {
-    imageUrl: '/assets/search.svg',
+    icon: AiOutlineSearch,
     route: '/browse',
     label: 'Browse',
   },
   {
-    imageUrl: '/assets/create.svg',
+    icon: AiOutlineAppstoreAdd,
     route: '/create',
     label: 'Create listing',
   },
   {
-    imageUrl: '/assets/home.svg',
+    icon: AiOutlineHome,
     route: '/my-listings',
     label: 'My listings',
   },

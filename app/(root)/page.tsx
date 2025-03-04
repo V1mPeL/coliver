@@ -3,16 +3,16 @@ import MainPageSearch from '@/components/forms/MainPageSearch';
 import { features_items } from '@/constants/constants';
 
 export default function Home() {
-  const apiImage = '';
-  const defaultBg = '/assets/main-page-wallpaper.jpg';
-  const bgImage = defaultBg || apiImage;
+  // const apiImage = '';
+  // const defaultBg = '/assets/main-page-wallpaper.jpg';
+  // const bgImage = defaultBg || apiImage;
 
   return (
     <>
       <section className='relative w-full h-screen max-[458px]:h-[300px]'>
         <div
           className='absolute inset-0 bg-cover bg-center z-0'
-          style={{ backgroundImage: `url(${bgImage})` }}
+          style={{ backgroundImage: `url(/assets/main-page-wallpaper.jpg)` }}
         ></div>
 
         <div className='absolute inset-0 bg-black/30 z-10'></div>
