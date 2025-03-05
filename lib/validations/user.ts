@@ -18,7 +18,7 @@ export const userValidation = z.object({
     .min(1, 'Phone number is required')
     .regex(
       /^\+[1-9]\d{1,2}\d{9,14}$/,
-      'Phone number must be in format + followed by country code (1-3 digits) and 9-14 digits (e.g., +12025550123 or +380671112233)'
+      '+ followed by country code (1-3 digits) and 9-14 digits '
     ),
   bio: z
     .string()
