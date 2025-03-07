@@ -161,7 +161,7 @@ export async function loginUser(
         bio: user.bio,
       },
     };
-  } catch (error: any) {
+  } catch {
     return {
       success: false,
       error: 'Something went wrong. Please try again.',

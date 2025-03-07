@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { searchCityValidation } from '@/lib/validations/searchValidation';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { AiOutlineSearch } from 'react-icons/ai';
 

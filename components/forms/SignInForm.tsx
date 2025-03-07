@@ -33,6 +33,7 @@ const SignUpForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof loginValidation>) => {
+    setIsSubmitting(true);
     try {
       const result = await loginUser(values.email, values.password);
       if (result.success) {
@@ -46,6 +47,8 @@ const SignUpForm = () => {
       form.setError('email', {
         message: 'Something went wrong. Please try again.',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
