@@ -20,8 +20,13 @@ export const userValidation = z.object({
       /^\+[1-9]\d{1,2}\d{9,14}$/,
       '+ followed by country code (1-3 digits) and 9-14 digits '
     ),
-  bio: z
+  bio: z.string().max(300, 'Bio must not exceed 300 characters'),
+});
+
+export const loginValidation = z.object({
+  email: z
     .string()
-    .min(3, 'Bio must be at least 3 characters')
-    .max(300, 'Bio must not exceed 300 characters'),
+    .email('Invalid email address')
+    .nonempty('Email is required'),
+  password: z.string().nonempty('Password is required'),
 });

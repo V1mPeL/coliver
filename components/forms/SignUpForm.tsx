@@ -16,8 +16,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
 import Button from '../Button';
 import Link from 'next/link';
+import toast from 'react-hot-toast'; // Імпортуємо react-hot-toast
+import { createUser } from '@/lib/actions/user.actions';
+import { useState } from 'react'; // Імпортуємо useState
+import { useRouter } from 'next/navigation';
 
 const SignUpForm = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false); // Стан для блокування кнопок під час сабміту
+
   const form = useForm<z.infer<typeof userValidation>>({
     resolver: zodResolver(userValidation),
     defaultValues: {
@@ -29,8 +35,30 @@ const SignUpForm = () => {
     },
   });
 
+  const router = useRouter();
+
   const onSubmit = async (values: z.infer<typeof userValidation>) => {
-    console.log('Form submitted with values:', values);
+    setIsSubmitting(true);
+
+    try {
+      const result = await createUser({
+        fullName: values.fullName,
+        email: values.email,
+        password: values.password,
+        phoneNumber: values.phoneNumber,
+        bio: values.bio || null,
+      });
+
+      if (result.success) {
+        toast.success('User created successfully!');
+
+        router.push('/profile');
+      }
+    } catch (error: any) {
+      toast.error(`Failed to create user: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -166,14 +194,16 @@ const SignUpForm = () => {
             <div className='flex gap-4 items-center'>
               <Button
                 type='submit'
-                className='bg-primary-main text-neutrals-white rounded-[33px] px-5 py-2 sh3B hover:bg-primary-60 transition-colors'
+                disabled={isSubmitting}
+                className='bg-primary-main text-neutrals-white rounded-[33px] px-5 py-2 sh3B hover:bg-primary-60 transition-colors disabled:bg-neutrals-40 disabled:cursor-not-allowed'
               >
-                Submit
+                {isSubmitting ? 'Loading...' : 'Submit'}
               </Button>
               <Button
                 type='reset'
                 onClick={handleReset}
-                className='border border-primary-main bg-transparent text-primary-main hover:bg-primary-main hover:text-neutrals-white rounded-[33px] px-5 py-2 sh3B'
+                disabled={isSubmitting}
+                className='border border-primary-main bg-transparent text-primary-main hover:bg-primary-main hover:text-neutrals-white rounded-[33px] px-5 py-2 sh3B disabled:border-neutrals-40 disabled:text-neutrals-40 disabled:cursor-not-allowed'
               >
                 Reset
               </Button>

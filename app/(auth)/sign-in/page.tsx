@@ -1,3 +1,4 @@
+import SignInForm from '@/components/forms/SignInForm';
 import React from 'react';
 
 const page = () => {
@@ -8,7 +9,7 @@ const page = () => {
     >
       <div className='absolute inset-0 bg-black/30 z-10'></div>
       <div className='absolute z-20 text-white flex items-center justify-center w-full h-full'>
-        Sign-in
+        <SignInForm />
       </div>
     </div>
   );

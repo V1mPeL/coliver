@@ -5,6 +5,8 @@ const userSchema = new mongoose.Schema(
     id: {
       type: String,
       required: true,
+      unique: true,
+      default: () => new mongoose.Types.ObjectId().toString(),
     },
     fullName: {
       type: String,
