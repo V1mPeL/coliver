@@ -10,7 +10,6 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
-import { Textarea } from '@/components/ui/textarea';
 import { loginValidation } from '@/lib/validations/user';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';

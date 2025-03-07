@@ -1,6 +1,5 @@
-// app/profile/page.tsx (без 'use client')
-import toast from 'react-hot-toast'; // Імпортуємо toast для серверного використання (потрібна серверна інтеграція, наприклад, через контекст)
 import { getUser } from '@/lib/actions/user.actions';
+import Link from 'next/link';
 
 interface UserProfile {
   fullName: string;
@@ -10,28 +9,48 @@ interface UserProfile {
   _id: string;
 }
 
+export const metadata = {
+  title: 'User Profile',
+  description: 'View and manage your profile information',
+};
+
 export default async function ProfilePage() {
   let user: UserProfile | null = null;
+  let errorMessage: string | null = null;
 
   try {
-    user = await getUser();
+    const result = await getUser();
+
+    if (result && typeof result === 'object') {
+      user = {
+        fullName: result.fullName,
+        email: result.email,
+        phoneNumber: result.phoneNumber,
+        bio: result.bio || null,
+        _id:
+          typeof result._id === 'object' ? result._id.toString() : result._id,
+      };
+    }
   } catch (error: any) {
-    // Обробка помилок на сервері (наприклад, перенаправлення через middleware або рендеринг помилки)
+    errorMessage =
+      error.message || 'An error occurred while fetching user data';
+  }
+
+  if (errorMessage) {
     return (
       <div className='container min-h-screen flex items-center justify-center'>
         <div className='max-w-4xl w-full p-6 bg-neutrals-white rounded-lg shadow-md'>
           <h1 className='text-primary-60 h2B text-center mb-8'>Profile</h1>
-          <p className='text-error-main'>{error.message}</p>
-          {error.message.includes('No authentication token found') && (
+          <p className='text-error-main'>{errorMessage}</p>
+          {errorMessage.includes('No authentication token found') && (
             <p>
-              Please{' '}
-              <a
-                href='/auth/sign-in'
+              Please
+              <Link
+                href='/sign-in'
                 className='text-primary-main hover:underline'
               >
                 sign in
-              </a>
-              .
+              </Link>
             </p>
           )}
         </div>
