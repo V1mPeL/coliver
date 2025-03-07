@@ -42,7 +42,7 @@ const SignUpForm = () => {
       } else {
         form.setError(result.errorField || 'email', { message: result.error });
       }
-    } catch (error: any) {
+    } catch {
       toast.error('Something went wrong. Please try again.');
       form.setError('email', {
         message: 'Something went wrong. Please try again.',
