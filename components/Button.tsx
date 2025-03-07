@@ -35,7 +35,7 @@ const Button = ({
       onClick={onClick}
       disabled={disabled}
       type={type}
-      className={`inline-block bg-primary-main text-neutrals-white rounded-[33px] px-5 py-2 sh3B duration-300 hover:bg-primary-60 disabled:bg-neutrals-40 disabled:cursor-not-allowed transition-all ${className}`}
+      className={`flex items-center  bg-primary-main text-neutrals-white rounded-[33px] px-5 py-2 sh3B duration-300 hover:bg-primary-60 disabled:bg-neutrals-40 disabled:cursor-not-allowed transition-all ${className}`}
     >
       {children}
     </button>

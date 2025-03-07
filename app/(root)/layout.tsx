@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className={`${openSans.variable} antialiased bg-neutrals-white`}>
         <Navbar />
         <main>{children}</main>
-        <Toaster position='top-center' />
+        <Toaster position='top-center' toastOptions={{ duration: 15000 }} />
       </body>
     </html>
   );

@@ -15,8 +15,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
 import Button from '../Button';
 import Link from 'next/link';
+import { loginUser } from '@/lib/actions/user.actions';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
+import { useState } from 'react';
 
 const SignUpForm = () => {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<z.infer<typeof loginValidation>>({
     resolver: zodResolver(loginValidation),
     defaultValues: {
@@ -26,7 +33,20 @@ const SignUpForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof loginValidation>) => {
-    console.log('Form submitted with values:', values);
+    try {
+      const result = await loginUser(values.email, values.password);
+      if (result.success) {
+        router.push('/');
+        toast.success('Login successful!');
+      } else {
+        form.setError(result.errorField || 'email', { message: result.error });
+      }
+    } catch (error: any) {
+      toast.error('Something went wrong. Please try again.');
+      form.setError('email', {
+        message: 'Something went wrong. Please try again.',
+      });
+    }
   };
 
   return (
@@ -90,6 +110,7 @@ const SignUpForm = () => {
             {/* <div className='flex gap-4 items-center'> */}
             <Button
               type='submit'
+              disabled={isSubmitting}
               className='bg-primary-main text-neutrals-white rounded-[33px] px-5 py-2 sh3B hover:bg-primary-60 transition-colors'
             >
               Login

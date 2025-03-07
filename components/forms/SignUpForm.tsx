@@ -22,7 +22,7 @@ import { useState } from 'react'; // Імпортуємо useState
 import { useRouter } from 'next/navigation';
 
 const SignUpForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false); // Стан для блокування кнопок під час сабміту
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<z.infer<typeof userValidation>>({
     resolver: zodResolver(userValidation),
@@ -50,9 +50,8 @@ const SignUpForm = () => {
       });
 
       if (result.success) {
-        toast.success('User created successfully!');
-
         router.push('/profile');
+        toast.success('User created successfully!');
       }
     } catch (error: any) {
       toast.error(`Failed to create user: ${error.message}`);

@@ -8,6 +8,7 @@ import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { AiOutlineSearch } from 'react-icons/ai';
 
 const MainPageSearch = () => {
   const router = useRouter();
@@ -42,12 +43,7 @@ const MainPageSearch = () => {
                     type='submit'
                     className='transition-all duration-300 hover:bg-primary-60 bg-primary-main h-[45px] w-[45px] rounded-full'
                   >
-                    <Image
-                      src='/assets/search.svg'
-                      alt='searcg'
-                      width={70}
-                      height={70}
-                    />
+                    <AiOutlineSearch className='text-neutrals-white ' />
                   </Button>
                 </div>
               </FormControl>
