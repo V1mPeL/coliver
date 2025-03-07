@@ -29,10 +29,6 @@ const SignUpForm = () => {
     console.log('Form submitted with values:', values);
   };
 
-  const handleReset = () => {
-    form.reset();
-  };
-
   return (
     <div className='container min-h-screen flex items-center justify-center'>
       <div className='max-w-4xl w-full max-[768px]:h-auto rounded-lg bg-neutrals-white p-6 shadow-md'>
