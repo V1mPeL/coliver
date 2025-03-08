@@ -40,7 +40,7 @@ export async function createUser({
   bio,
 }: CreatingUserParams) {
   try {
-    connectToDataBase();
+    await connectToDataBase();
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -50,6 +50,7 @@ export async function createUser({
       password: hashedPassword,
       phoneNumber,
       bio,
+      profile_image: '',
     });
 
     const token = jwt.sign(

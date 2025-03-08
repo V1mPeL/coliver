@@ -2,12 +2,12 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema(
   {
-    id: {
-      type: String,
-      required: true,
-      unique: true,
-      default: () => new mongoose.Types.ObjectId().toString(),
-    },
+    // id: {
+    //   type: String,
+    //   required: true,
+    //   unique: true,
+    //   default: () => new mongoose.Types.ObjectId().toString(),
+    // },
     fullName: {
       type: String,
       required: true,
@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema(
     },
     bio: {
       type: String,
+    },
+    profile_image: {
+      type: String,
+      default: '',
     },
     listings: [
       {

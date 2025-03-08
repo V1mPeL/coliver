@@ -10,7 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from '../ui/form';
-import { loginValidation } from '@/lib/validations/user';
+import { loginValidation } from '@/lib/validations/user.validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
 import Button from '../Button';

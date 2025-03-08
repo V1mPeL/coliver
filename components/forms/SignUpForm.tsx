@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from '../ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { userValidation } from '@/lib/validations/user';
+import { userValidation } from '@/lib/validations/user.validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Input } from '../ui/input';
 import Button from '../Button';
