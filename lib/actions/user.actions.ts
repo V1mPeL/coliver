@@ -15,6 +15,15 @@ interface CreatingUserParams {
   bio: string | null;
 }
 
+interface UpdateParams {
+  userId: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  bio: string | null;
+  profile_image: string | null | undefined;
+}
+
 type LoginUserResponse =
   | {
       success: true;
@@ -109,6 +118,37 @@ export async function getUser() {
     return JSON.parse(JSON.stringify(user));
   } catch (error: any) {
     throw new Error(`Failed to get user: ${error.message}`);
+  }
+}
+
+export async function updateUser({
+  userId,
+  fullName,
+  email,
+  phoneNumber,
+  bio,
+  profile_image,
+}: UpdateParams) {
+  try {
+    await connectToDataBase();
+
+    await User.findOneAndUpdate(
+      { _id: userId },
+      {
+        fullName,
+        email,
+        phoneNumber,
+        bio,
+        profile_image,
+      },
+      { upsert: true }
+    );
+
+    return {
+      success: true,
+    };
+  } catch (error: any) {
+    throw new Error(`Failed to update user: ${error.message}`);
   }
 }
 
