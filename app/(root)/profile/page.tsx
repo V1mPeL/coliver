@@ -22,7 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { updateUserValidation } from '@/lib/validations/user.validation';
 import { isBase64Image } from '@/lib/utils';
-import Spinner from '@/components/spinner';
+import Spinner from '@/components/Spinner';
 
 interface UserProfile {
   fullName: string;
