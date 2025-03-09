@@ -22,6 +22,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { updateUserValidation } from '@/lib/validations/user.validation';
 import { isBase64Image } from '@/lib/utils';
+import Spinner from '@/components/spinner';
 
 interface UserProfile {
   fullName: string;
@@ -163,11 +164,7 @@ export default function ProfilePage() {
   };
 
   if (loading) {
-    return (
-      <div className='container min-h-screen flex items-center justify-center'>
-        <p>Loading...</p>
-      </div>
-    );
+    return <Spinner />;
   }
 
   if (!user) {

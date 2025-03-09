@@ -1,12 +1,9 @@
 import FeaturesItem from '@/components/FeaturesItem';
 import MainPageSearch from '@/components/forms/MainPageSearch';
+import RecentListings from '@/components/RecentListings';
 import { features_items } from '@/constants/constants';
 
 export default function Home() {
-  // const apiImage = '';
-  // const defaultBg = '/assets/main-page-wallpaper.jpg';
-  // const bgImage = defaultBg || apiImage;
-
   return (
     <>
       <section className='relative w-full h-screen max-[458px]:h-[300px]'>
@@ -29,6 +26,8 @@ export default function Home() {
           <MainPageSearch />
         </div>
       </section>
+
+      <RecentListings />
 
       <main className='py-8 w-full bg-white'>
         <div className='container'>
