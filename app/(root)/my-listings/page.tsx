@@ -4,7 +4,7 @@ import Spinner from '@/components/Spinner';
 import { checkAuth } from '@/lib/actions/user.actions';
 import React, { useEffect, useState } from 'react';
 
-const page = () => {
+const ProfilePage = () => {
   const [isUser, setIsUser] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -37,4 +37,4 @@ const page = () => {
   return <div>page</div>;
 };
 
-export default page;
+export default ProfilePage;

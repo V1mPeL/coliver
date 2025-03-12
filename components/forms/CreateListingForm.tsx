@@ -19,7 +19,7 @@ import { listingValidation } from '@/lib/validations/listing.validation';
 import { IoCameraOutline } from 'react-icons/io5';
 
 const CreateListingForm = () => {
-  const router = useRouter();
+  // const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
 
@@ -39,7 +39,9 @@ const CreateListingForm = () => {
     },
   });
 
-  const onSubmit = () => {};
+  const onSubmit = () => {
+    setIsSubmitting(true);
+  };
 
   const handleReset = () => {
     form.reset();
