@@ -14,13 +14,18 @@ export const listingValidation = z.object({
     .min(2, 'Street must be at least 2 characters')
     .nonempty('Street is required'),
   price: z
-    .number()
-    .min(0, 'Price must be a positive number')
-    .nonnegative('Price cannot be negative'),
+    .string()
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val), { message: 'Price must be a valid number' })
+    .refine((val) => val >= 0, { message: 'Price must be a positive number' }),
   floor: z
-    .number()
-    .int('Floor must be an integer')
-    .min(0, 'Floor cannot be negative'),
+    .string()
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val), { message: 'Floor must be a valid number' })
+    .refine((val) => Number.isInteger(val), {
+      message: 'Floor must be an integer',
+    })
+    .refine((val) => val >= 0, { message: 'Floor cannot be negative' }),
   preferences: z
     .array(z.string().min(1, 'Preference cannot be empty'))
     .min(0, 'Preferences can be empty')
@@ -34,17 +39,17 @@ export const listingValidation = z.object({
     .max(1000, 'Description must not exceed 1000 characters')
     .optional(),
   capacity: z
-    .number()
-    .int('Capacity must be an integer')
-    .min(1, 'Capacity must be at least 1'),
+    .string()
+    .transform((val) => Number(val))
+    .refine((val) => !isNaN(val), {
+      message: 'Capacity must be a valid number',
+    })
+    .refine((val) => Number.isInteger(val), {
+      message: 'Capacity must be an integer',
+    })
+    .refine((val) => val >= 1, { message: 'Capacity must be at least 1' }),
   photos: z
-    .array(
-      z
-        .string()
-        .url('Each photo must be a valid URL')
-        // .nonempty('Photo URL cannot be empty')
-        .optional() // Тимчасово не обов'язкове поле для тестування форми на початкових етапах
-    )
+    .array(z.string().url('Each photo must be a valid URL').optional())
     .min(1, 'At least one photo is required')
     .max(10, 'Maximum 10 photos allowed'),
 });

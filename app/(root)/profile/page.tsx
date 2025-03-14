@@ -118,9 +118,9 @@ export default function ProfilePage() {
     e.preventDefault();
 
     if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
+      const files = e.target.files[0];
 
-      if (!file.type.includes('image')) {
+      if (!files.type.includes('image')) {
         return toast.error('Please upload an image file');
       }
 
@@ -130,7 +130,7 @@ export default function ProfilePage() {
         fieldChange(imageDataUrl);
       };
 
-      fileReader.readAsDataURL(file);
+      fileReader.readAsDataURL(files);
     }
   };
 
@@ -170,8 +170,6 @@ export default function ProfilePage() {
   if (!user) {
     return null;
   }
-
-  console.log(user);
 
   return (
     <div className='container min-h-screen flex items-center justify-center py-10'>
