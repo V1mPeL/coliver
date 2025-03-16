@@ -1,16 +1,16 @@
 import React from 'react';
 import { fetchSingleListing } from '@/lib/actions/listing.actions';
 
-interface ListingPageProps {
-  params: {
-    listingId: string;
-  };
+interface PageProps {
+  params: Promise<{ listingId: string }>;
 }
 
-const ListingPage = async ({ params }: ListingPageProps) => {
-  const { listingId } = params;
+const ListingPage = async ({ params }: PageProps) => {
+  const { listingId } = await params;
   if (typeof listingId !== 'string') {
-    return <div>Invalid listing ID</div>;
+    return (
+      <div className='text-red-500 text-center py-10'>Invalid listing ID</div>
+    );
   }
   const listing = await fetchSingleListing(listingId);
 
