@@ -5,10 +5,9 @@ interface ListingPageProps {
   params: {
     listingId: string;
   };
-  searchParams?: Record<string, string | string[]>;
 }
 
-const ListingPage = async ({ params, searchParams }: ListingPageProps) => {
+const ListingPage = async ({ params }: ListingPageProps) => {
   const { listingId } = params;
   if (typeof listingId !== 'string') {
     return <div>Invalid listing ID</div>;
