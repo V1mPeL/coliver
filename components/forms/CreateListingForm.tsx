@@ -21,9 +21,17 @@ import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { amenities, preferences } from '@/constants/constants';
 import { Checkbox } from '@/components/ui/checkbox';
-import { streetToGeocode } from '@/lib/utils';
+import { isBase64Image, streetToGeocode } from '@/lib/utils';
+import { createListing } from '@/lib/actions/listing.actions';
+import { useRouter } from 'next/navigation';
 
-const CreateListingForm = () => {
+interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
+const CreateListingForm = ({ userId }: { userId: string }) => {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]);
 
@@ -43,15 +51,93 @@ const CreateListingForm = () => {
     },
   });
 
+  const uploadToCloudinary = async (imageData: string[]): Promise<string[]> => {
+    const uploadPromises = imageData.map(async (image) => {
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ image }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to upload image');
+      }
+      return data.url;
+    });
+
+    return Promise.all(uploadPromises);
+  };
+
   const onSubmit = async (values: z.infer<typeof listingValidation>) => {
     setIsSubmitting(true);
-    // Дописати функцію перетворення міста і вулиці в координати, створити функцію в lib/utils
-    const geocodedAddress = streetToGeocode({
-      address: { city: values.city, street: values.street },
-    });
-    console.log(geocodedAddress);
-    console.log(values);
-    setIsSubmitting(false);
+
+    try {
+      const geocodedAddress = await streetToGeocode({
+        address: {
+          city: values.city,
+          street: values.street,
+        },
+      });
+      if (!geocodedAddress) {
+        toast.error(
+          'Could not determine coordinates. Please check the address.'
+        );
+        setIsSubmitting(false);
+        return;
+      }
+
+      const coordinates: Coordinates = {
+        lat: geocodedAddress.latitude,
+        lng: geocodedAddress.longitude,
+      };
+
+      let photoUrls: string[] = [];
+      if (values.photos && values.photos.length > 0) {
+        // Filter out base64 images that need to be uploaded
+        const base64Photos = values.photos.filter(
+          (photo): photo is string =>
+            photo !== undefined && isBase64Image(photo)
+        );
+
+        if (base64Photos.length > 0) {
+          // Upload all base64 images to Cloudinary
+          photoUrls = await uploadToCloudinary(base64Photos);
+        }
+
+        // Keep any existing URLs that aren't base64
+        const existingUrls = values.photos.filter(
+          (photo): photo is string =>
+            photo !== undefined && !isBase64Image(photo)
+        );
+        photoUrls = [...existingUrls, ...photoUrls];
+      }
+
+      const result = await createListing({
+        title: values.title,
+        city: values.city,
+        street: values.street,
+        price: values.price,
+        floor: values.floor,
+        preferences: values.preferences,
+        amenities: values.amenities,
+        description: values.description,
+        capacity: values.capacity,
+        photos: photoUrls,
+        coordinates: coordinates,
+        userId: userId,
+      });
+
+      if (result.success) {
+        router.push(`/listings/${result.listingId}`);
+        toast.success('Listing created successfully!');
+      }
+    } catch (error: any) {
+      toast.error(`Failed to create listing: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -150,7 +236,7 @@ const CreateListingForm = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className='text-black font-semibold'>
-                            Price
+                            Price (USD)
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -293,13 +379,14 @@ const CreateListingForm = () => {
                                 >
                                   <Checkbox
                                     checked={field.value.includes(
-                                      preference.name
+                                      `${preference.icon} ${preference.name}`
                                     )}
                                     onCheckedChange={(checked) => {
+                                      const combinedValue = `${preference.icon} ${preference.name}`;
                                       const updatedPreferences = checked
-                                        ? [...field.value, preference.name]
+                                        ? [...field.value, combinedValue]
                                         : field.value.filter(
-                                            (p) => p !== preference.name
+                                            (p) => p !== combinedValue
                                           );
                                       field.onChange(updatedPreferences);
                                     }}
@@ -334,12 +421,15 @@ const CreateListingForm = () => {
                                   className='flex items-center space-x-2'
                                 >
                                   <Checkbox
-                                    checked={field.value.includes(amenity.name)}
+                                    checked={field.value.includes(
+                                      `${amenity.icon} ${amenity.name}`
+                                    )}
                                     onCheckedChange={(checked) => {
+                                      const combinedValue = `${amenity.icon} ${amenity.name}`;
                                       const updatedAmenities = checked
-                                        ? [...field.value, amenity.name]
+                                        ? [...field.value, combinedValue]
                                         : field.value.filter(
-                                            (p) => p !== amenity.name
+                                            (a) => a !== combinedValue
                                           );
                                       field.onChange(updatedAmenities);
                                     }}

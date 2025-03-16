@@ -23,23 +23,22 @@ export async function streetToGeocode({
   const addressString = `${address.city}, ${address.street}`;
   const encodedAdress = encodeURIComponent(addressString);
   const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedAdress}`;
-
   try {
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'CoLiver (example@example.com)',
       },
     });
-
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
     const data = await response.json();
-
     if (data.length > 0) {
       const result = data[0];
-      return result;
+      return {
+        latitude: parseFloat(result.lat),
+        longitude: parseFloat(result.lon),
+      };
     } else {
       console.warn('No results found for the address:', addressString);
       return null;

@@ -36,8 +36,7 @@ export const listingValidation = z.object({
     .max(10, 'Maximum 10 amenities allowed'),
   description: z
     .string()
-    .max(1000, 'Description must not exceed 1000 characters')
-    .optional(),
+    .max(1000, 'Description must not exceed 1000 characters'),
   capacity: z
     .string()
     .transform((val) => Number(val))
@@ -49,7 +48,7 @@ export const listingValidation = z.object({
     })
     .refine((val) => val >= 1, { message: 'Capacity must be at least 1' }),
   photos: z
-    .array(z.string().url('Each photo must be a valid URL').optional())
+    .array(z.string().url('Each photo must be a valid URL'))
     .min(1, 'At least one photo is required')
     .max(10, 'Maximum 10 photos allowed'),
 });

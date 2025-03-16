@@ -151,6 +151,7 @@ const Navbar = () => {
             ></span>
           </button>
         </div>
+
         {/* Mobile Menu */}
         <div
           className={`nav-menu md:hidden bg-neutrals-60 overflow-hidden transition-all duration-300 ease-in-out ${
@@ -192,13 +193,7 @@ const Navbar = () => {
                   href='/sign-in'
                   className='flex items-center gap-2 text-neutrals-white sh3B'
                 >
-                  <Image
-                    src='/assets/user.svg'
-                    alt='User'
-                    width={20}
-                    height={20}
-                    className='w-5 h-5'
-                  />
+                  <AiOutlineUser className='w-6 h-6' />
                   Login
                 </Link>
               )}

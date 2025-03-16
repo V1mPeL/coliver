@@ -7,6 +7,7 @@ import CreateListingForm from '@/components/forms/CreateListingForm';
 
 const Page = () => {
   const [isUser, setIsUser] = useState(false);
+  const [userId, setUserId] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,6 +15,7 @@ const Page = () => {
       try {
         const result = await checkAuth();
         setIsUser(result.isAuthenticated);
+        setUserId(result.user?.id);
       } catch (error) {
         console.error('Failed to check auth:', error);
         setIsUser(false);
@@ -37,7 +39,7 @@ const Page = () => {
 
   return (
     <div className='container min-h-screen flex items-center justify-center py-10'>
-      <CreateListingForm />
+      <CreateListingForm userId={userId} />
     </div>
   );
 };
