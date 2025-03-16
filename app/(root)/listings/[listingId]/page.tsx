@@ -1,19 +1,18 @@
 import React from 'react';
 import { fetchSingleListing } from '@/lib/actions/listing.actions';
 
-interface Params {
+interface ListingPageProps {
   params: {
     listingId: string;
   };
+  searchParams?: Record<string, string | string[]>;
 }
 
-const ListingPage = async ({ params }: Params) => {
+const ListingPage = async ({ params, searchParams }: ListingPageProps) => {
   const { listingId } = params;
-
   if (typeof listingId !== 'string') {
     return <div>Invalid listing ID</div>;
   }
-
   const listing = await fetchSingleListing(listingId);
 
   return (
