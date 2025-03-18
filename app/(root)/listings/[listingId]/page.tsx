@@ -236,7 +236,7 @@ const ListingPage = async ({ params }: PageProps) => {
                 listing.coLivingDetails.roommates.length > 0 && (
                   <div className='p-6 bg-neutrals-95 rounded-lg shadow-md border border-neutrals-90 hover:shadow-lg transition-shadow'>
                     <h3 className='h3B mb-4 text-center text-primary-main'>
-                      Roommates
+                      Housemates
                     </h3>
                     <ul className='space-y-4'>
                       {listing.coLivingDetails.roommates.map(
@@ -255,7 +255,7 @@ const ListingPage = async ({ params }: PageProps) => {
                             </div>
                             {roommate.description && (
                               <p className='text-sm mt-1 text-neutrals-20 italic'>
-                                "{roommate.description}"
+                                &quot;{roommate.description}&quot;
                               </p>
                             )}
                           </li>
