@@ -1,59 +1,47 @@
 'use client';
-
+import { useState } from 'react';
 import Image from 'next/image';
-import Fancybox from './Fancybox';
-import Carousel from './Carousel';
+import CustomLightbox from './CustomLightbox';
 
-interface PhotoGalleryProps {
+interface ImageGalleryProps {
   photos: string[];
 }
 
-const ImageGallery = ({ photos }: PhotoGalleryProps) => {
-  if (!photos || photos.length === 0) {
-    return <div className='text-center py-4'>No photos available</div>;
-  }
+const ImageGallery = ({ photos }: ImageGalleryProps) => {
+  const [open, setOpen] = useState(false);
+  const [index, setIndex] = useState(0);
 
   return (
-    <div className='w-full photo-gallery'>
-      <Fancybox
-        options={{
-          Carousel: {
-            infinite: true,
-          },
-        }}
-      >
-        <Carousel
-          options={{
-            infinite: true,
-            Navigation: true,
-            Thumbs: {
-              type: 'modern',
-              minCount: 1,
-            },
-          }}
-        >
-          {photos.map((image, index) => (
-            <div
-              key={index}
-              className='f-carousel__slide'
-              data-fancybox='gallery'
-              data-src={image}
-              data-thumb-src={image}
-            >
-              <Image
-                src={image}
-                alt={`Apartments image ${index + 1}`}
-                width={0} // Видаляємо фіксовану ширину, покладаємося на CSS
-                height={0} // Видаляємо фіксовану висоту, покладаємося на CSS
-                className='rounded-lg object-cover w-full h-auto'
-                loading='lazy'
-                sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
-              />
-            </div>
-          ))}
-        </Carousel>
-      </Fancybox>
-    </div>
+    <>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+        {photos.map((photo, i) => (
+          <div
+            key={i}
+            className='relative w-full h-48 cursor-pointer'
+            onClick={() => {
+              setIndex(i);
+              setOpen(true);
+            }}
+          >
+            <Image
+              src={photo}
+              alt={`Gallery image ${i + 1}`}
+              fill
+              objectFit='cover'
+              className='rounded-lg'
+            />
+          </div>
+        ))}
+      </div>
+
+      {open && (
+        <CustomLightbox
+          images={photos}
+          initialIndex={index}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
   );
 };
 

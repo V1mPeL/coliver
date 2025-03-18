@@ -13,6 +13,47 @@ import parsePhoneNumber from 'libphonenumber-js';
 import { formatPrice } from '@/lib/utils';
 import ImageGallery from '@/components/gallery/ImageGallery';
 
+// Типи для Co-Living Details
+interface Roommate {
+  name: string;
+  age: number;
+  gender: 'Male' | 'Female' | 'Other';
+  description?: string;
+}
+
+interface CoLivingDetails {
+  roommates?: Roommate[];
+  houseRules?: string[];
+  sharedSpaces?: string;
+  schedule?: string;
+}
+
+// Тип для userId
+interface User {
+  phoneNumber: string;
+  profile_image: string;
+  fullName: string;
+  createdAt: Date;
+  email: string;
+}
+
+// Тип для listing
+interface Listing {
+  photos: string[];
+  price: number;
+  currency: string;
+  city: string;
+  street: string;
+  userId: User;
+  title: string;
+  capacity: number;
+  floor: number;
+  amenities: string[];
+  description: string;
+  preferences: string[];
+  coLivingDetails?: CoLivingDetails;
+}
+
 interface PageProps {
   params: Promise<{ listingId: string }>;
 }
@@ -25,7 +66,7 @@ const ListingPage = async ({ params }: PageProps) => {
     );
   }
 
-  const listing = await fetchSingleListing(listingId);
+  const listing: Listing = await fetchSingleListing(listingId);
   const phoneNumber = parsePhoneNumber(listing.userId.phoneNumber);
 
   return (
@@ -134,45 +175,144 @@ const ListingPage = async ({ params }: PageProps) => {
             </div>
           </div>
 
-          {/* Description */}
-          <div className='mb-6'>
-            <h3 className='h3B mb-3'>Description</h3>
-            <p className='sh3S text-neutrals-20'>{listing.description}</p>
-          </div>
+          {/* Description, Preferences, Amenities + Map */}
+          <div className='flex flex-col lg:flex-row lg:gap-6 mb-6'>
+            {/* Left column: Description, Preferences, Amenities */}
+            <div className='w-full lg:w-[65%] space-y-6'>
+              {/* Description */}
+              <div>
+                <h3 className='h3B mb-3'>Description</h3>
+                <p className='sh3S text-neutrals-20'>{listing.description}</p>
+              </div>
 
-          {/* Preferences */}
-          <div className='mb-6'>
-            <h3 className='h3B mb-6 text-center'>Preferences</h3>
-            <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-              {listing.preferences.map((preference: string, index: number) => (
-                <span key={index} className='sh3S'>
-                  {preference}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Amenities */}
-          <div className='mb-6'>
-            <h3 className='h3B mb-6 text-center'>Amenities</h3>
-            <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
-              {listing.amenities.map((amenity: string, index: number) => (
-                <div key={index} className='flex items-center'>
-                  <span className='sh3S'>{amenity}</span>
+              {/* Preferences */}
+              <div>
+                <h3 className='h3B mb-6 text-center'>Preferences</h3>
+                <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+                  {listing.preferences.map(
+                    (preference: string, index: number) => (
+                      <span key={index} className='sh3S'>
+                        {preference}
+                      </span>
+                    )
+                  )}
                 </div>
-              ))}
+              </div>
+
+              {/* Amenities */}
+              <div>
+                <h3 className='h3B mb-6 text-center'>Amenities</h3>
+                <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+                  {listing.amenities.map((amenity: string, index: number) => (
+                    <div key={index} className='flex items-center'>
+                      <span className='sh3S'>{amenity}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right column: Map */}
+            <div className='w-full lg:w-[35%] mt-6 lg:mt-0'>
+              <div className='w-full h-[300px] bg-neutrals-black flex items-center justify-center rounded-md'>
+                <div className='text-center'>
+                  <p className='sh3B mb-2 text-white'>
+                    Map will be displayed here
+                  </p>
+                  <p className='text-sm text-neutrals-30'>
+                    {listing.city}, {listing.street}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Map placeholder - moved to the bottom */}
-        <div className='w-full'>
-          <div className='w-full h-[300px] bg-neutrals-95 flex items-center justify-center rounded-md mt-0'>
-            <div className='text-center'>
-              <p className='sh3B mb-2'>Map will be displayed here</p>
-              <p className='text-sm text-neutrals-30'>
-                {listing.city}, {listing.street}
-              </p>
+          {/* Co-Living Details */}
+          <div className='mb-6'>
+            <h3 className='h3B mb-6 text-center'>Co-Living Details</h3>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+              {/* Roommates */}
+              {listing.coLivingDetails?.roommates &&
+                listing.coLivingDetails.roommates.length > 0 && (
+                  <div className='p-6 bg-neutrals-95 rounded-lg shadow-md border border-neutrals-90 hover:shadow-lg transition-shadow'>
+                    <h3 className='h3B mb-4 text-center text-primary-main'>
+                      Roommates
+                    </h3>
+                    <ul className='space-y-4'>
+                      {listing.coLivingDetails.roommates.map(
+                        (roommate: Roommate, index: number) => (
+                          <li
+                            key={index}
+                            className='pb-3 border-b border-neutrals-90 last:border-0'
+                          >
+                            <div className='flex items-center justify-between mb-1'>
+                              <span className='sh3B text-neutrals-10'>
+                                {roommate.name}
+                              </span>
+                              <span className='text-sm px-2 py-1 bg-neutrals-90 rounded-full'>
+                                {roommate.age} yrs, {roommate.gender}
+                              </span>
+                            </div>
+                            {roommate.description && (
+                              <p className='text-sm mt-1 text-neutrals-20 italic'>
+                                "{roommate.description}"
+                              </p>
+                            )}
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                )}
+              {/* House Rules */}
+              {listing.coLivingDetails?.houseRules &&
+                listing.coLivingDetails.houseRules.length > 0 && (
+                  <div className='p-6 bg-neutrals-95 rounded-lg shadow-md border border-neutrals-90 hover:shadow-lg transition-shadow'>
+                    <h3 className='h3B mb-4 text-center text-primary-main'>
+                      House Rules
+                    </h3>
+                    <ul className='space-y-2'>
+                      {listing.coLivingDetails.houseRules.map(
+                        (rule: string, index: number) => (
+                          <li key={index} className='flex items-start mb-2'>
+                            <div className='min-w-6 h-6 mr-2 flex items-center justify-center bg-neutrals-90 rounded-full text-neutrals-10 font-semibold'>
+                              {index + 1}
+                            </div>
+                            <span className='sh3S text-neutrals-20 pt-0.5'>
+                              {rule}
+                            </span>
+                          </li>
+                        )
+                      )}
+                    </ul>
+                  </div>
+                )}
+              {/* Shared Spaces */}
+              {listing.coLivingDetails?.sharedSpaces && (
+                <div className='p-6 bg-neutrals-95 rounded-lg shadow-md border border-neutrals-90 hover:shadow-lg transition-shadow'>
+                  <h3 className='h3B mb-4 text-center text-primary-main'>
+                    Shared Spaces
+                  </h3>
+                  <div className='bg-white p-4 rounded-md shadow-sm'>
+                    <p className='sh3S text-neutrals-20 whitespace-pre-line'>
+                      {listing.coLivingDetails.sharedSpaces}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {/* Schedule */}
+              {listing.coLivingDetails?.schedule && (
+                <div className='p-6 bg-neutrals-95 rounded-lg shadow-md border border-neutrals-90 hover:shadow-lg transition-shadow'>
+                  <h3 className='h3B mb-4 text-center text-primary-main'>
+                    Schedule
+                  </h3>
+                  <div className='bg-white p-4 rounded-md shadow-sm'>
+                    <p className='sh3S text-neutrals-20 whitespace-pre-line'>
+                      {listing.coLivingDetails.schedule}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
