@@ -79,3 +79,83 @@
     --radius: 0.5rem;
   }
 }
+.photo-gallery {
+  --gray-background: #fff; /* Білий фон */
+}
+
+.photo-gallery .f-carousel__slide img {
+  border-radius: 10px; /* Закруглені кути */
+  object-fit: cover;
+}
+
+/* Основне зображення в каруселі */
+.photo-gallery .f-carousel__slide img {
+  width: 100%;
+  height: auto; /* Дозволяємо висоті масштабуватися природно */
+  max-height: 400px; /* Максимальна висота для великих екранів */
+}
+
+/* Карусель мініатюр */
+.f-carousel__thumbs {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px; /* Відстань між мініатюрами */
+  overflow-x: auto; /* Дозволяє горизонтальну прокрутку */
+  -webkit-overflow-scrolling: touch; /* Плавна прокрутка на iOS */
+  padding-bottom: 8px; /* Додаємо відступ для видимості прокрутки */
+}
+
+/* Стилі для мініатюр */
+.f-carousel__thumbs .f-carousel__slide img {
+  width: 150px;
+  height: 150px; /* Базова висота для великих екранів */
+  flex-shrink: 0; /* Забороняємо зменшення розміру */
+}
+
+/* Адаптивність для різних розмірів екрану */
+@media (max-width: 1024px) {
+  .photo-gallery .f-carousel__slide img {
+    max-height: 350px; /* Менша висота для планшетів */
+  }
+
+  .f-carousel__thumbs .f-carousel__slide img {
+    width: 120px;
+    height: 120px; /* Менший розмір для планшетів */
+  }
+}
+
+@media (max-width: 640px) {
+  .photo-gallery .f-carousel__slide img {
+    max-height: 300px; /* Ще менша висота для мобільних */
+  }
+
+  .f-carousel__thumbs .f-carousel__slide img {
+    width: 100px;
+    height: 100px; /* Ще менший розмір для мобільних */
+  }
+}
+
+/* Стилі для стрілок */
+.f-carousel .f-button--next,
+.f-carousel .f-button--prev {
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Активна мініатюра */
+.f-carousel__thumbs .is-nav-selected img {
+  border: 2px solid #000;
+}
+
+/* Приховуємо горизонтальну прокрутку на великих екранах, якщо вміщаються всі мініатюри */
+@media (min-width: 1025px) {
+  .f-carousel__thumbs {
+    overflow-x: hidden;
+  }
+}

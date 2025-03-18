@@ -15,6 +15,7 @@ interface Params {
   city: string;
   street: string;
   price: number;
+  currency: string;
   floor: number;
   preferences: string[];
   amenities: string[];
@@ -23,6 +24,17 @@ interface Params {
   photos: string[];
   coordinates: Coordinates;
   userId: string;
+  coLivingDetails?: {
+    roommates?: {
+      name: string;
+      age: number;
+      gender: 'Male' | 'Female' | 'Other';
+      description?: string;
+    }[];
+    houseRules?: string[];
+    sharedSpaces?: string;
+    schedule?: string;
+  };
 }
 
 export async function createListing({
@@ -30,6 +42,7 @@ export async function createListing({
   city,
   street,
   price,
+  currency,
   floor,
   preferences,
   amenities,
@@ -38,6 +51,7 @@ export async function createListing({
   photos,
   coordinates,
   userId,
+  coLivingDetails,
 }: Params) {
   try {
     connectToDataBase();
@@ -47,6 +61,7 @@ export async function createListing({
       city,
       street,
       price,
+      currency,
       floor,
       preferences,
       amenities,
@@ -55,13 +70,14 @@ export async function createListing({
       photos,
       coordinates,
       userId,
+      coLivingDetails, // Додано нове поле
     });
 
     await User.findByIdAndUpdate(userId, {
       $push: { listings: createdListing._id },
     });
 
-    return { success: true, listingId: createdListing._id };
+    return { success: true, listingId: createdListing._id.toString() };
   } catch (error: any) {
     throw new Error(`Failed to create listing: ${error.message}`);
   }

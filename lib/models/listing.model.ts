@@ -17,12 +17,8 @@ const listingSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-
+    price: { type: Number, required: true },
+    currency: { type: String, required: true, enum: ['USD', 'EUR', 'UAH'] },
     floor: {
       type: Number,
       required: true,
@@ -36,7 +32,6 @@ const listingSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-
     description: {
       type: String,
     },
@@ -57,6 +52,43 @@ const listingSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: 'User', // Посилання на колекцію користувачів
       required: true,
+    },
+    coLivingDetails: {
+      roommates: [
+        {
+          name: {
+            type: String,
+            required: true,
+            trim: true,
+          },
+          age: {
+            type: Number,
+            required: true,
+            min: 0,
+          },
+          gender: {
+            type: String,
+            required: true,
+            enum: ['Male', 'Female', 'Other'],
+          },
+          description: {
+            type: String,
+            trim: true,
+          },
+        },
+      ],
+      houseRules: {
+        type: [String],
+        default: [],
+      },
+      sharedSpaces: {
+        type: String,
+        trim: true,
+      },
+      schedule: {
+        type: String,
+        trim: true,
+      },
     },
   },
   { timestamps: true }

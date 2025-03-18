@@ -48,3 +48,14 @@ export async function streetToGeocode({
     return null;
   }
 }
+
+export const formatPrice = (price: number): string => {
+  const priceStr = Math.floor(price).toString();
+
+  const groups = [];
+  for (let i = priceStr.length; i > 0; i -= 3) {
+    groups.unshift(priceStr.slice(Math.max(0, i - 3), i));
+  }
+
+  return groups.join(' ');
+};

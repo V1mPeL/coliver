@@ -17,6 +17,7 @@ import { Input } from '../ui/input';
 import { useState } from 'react';
 import { listingValidation } from '@/lib/validations/listing.validation';
 import { IoCameraOutline } from 'react-icons/io5';
+import { IoAdd, IoTrashOutline } from 'react-icons/io5';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { amenities, preferences } from '@/constants/constants';
@@ -42,12 +43,19 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
       city: '',
       street: '',
       price: 0,
+      currency: 'USD',
       floor: 0,
       preferences: [],
       amenities: [],
       description: '',
       capacity: 1,
       photos: [],
+      coLivingDetails: {
+        roommates: [],
+        houseRules: [],
+        sharedSpaces: '',
+        schedule: '',
+      },
     },
   });
 
@@ -95,18 +103,15 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
 
       let photoUrls: string[] = [];
       if (values.photos && values.photos.length > 0) {
-        // Filter out base64 images that need to be uploaded
         const base64Photos = values.photos.filter(
           (photo): photo is string =>
             photo !== undefined && isBase64Image(photo)
         );
 
         if (base64Photos.length > 0) {
-          // Upload all base64 images to Cloudinary
           photoUrls = await uploadToCloudinary(base64Photos);
         }
 
-        // Keep any existing URLs that aren't base64
         const existingUrls = values.photos.filter(
           (photo): photo is string =>
             photo !== undefined && !isBase64Image(photo)
@@ -119,6 +124,7 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
         city: values.city,
         street: values.street,
         price: values.price,
+        currency: values.currency,
         floor: values.floor,
         preferences: values.preferences,
         amenities: values.amenities,
@@ -127,6 +133,7 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
         photos: photoUrls,
         coordinates: coordinates,
         userId: userId,
+        coLivingDetails: values.coLivingDetails, // Додано нові поля
       });
 
       if (result.success) {
@@ -190,9 +197,27 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
     }
   };
 
+  // Динамічне додавання співмешканця
+  const addRoommate = () => {
+    const currentRoommates = form.getValues('coLivingDetails.roommates') || [];
+    form.setValue('coLivingDetails.roommates', [
+      ...currentRoommates,
+      { name: '', age: 0, gender: 'Other', description: '' },
+    ]);
+  };
+
+  // Видалення співмешканця
+  const removeRoommate = (index: number) => {
+    const currentRoommates = form.getValues('coLivingDetails.roommates') || [];
+    form.setValue(
+      'coLivingDetails.roommates',
+      currentRoommates.filter((_, i) => i !== index)
+    );
+  };
+
   return (
     <div className='container min-h-screen py-10'>
-      <div className='max-w-7xl mx-auto bg-neutrals-white rounded-xl shadow-lg overflow-hidden'>
+      <div className='max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden'>
         <h1 className='text-primary-60 h2B text-center py-6 border-b border-gray-100'>
           Create Listing
         </h1>
@@ -236,16 +261,38 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className='text-black font-semibold'>
-                            Price (USD)
+                            Price
                           </FormLabel>
-                          <FormControl>
-                            <Input
-                              type='number'
-                              placeholder='$750'
-                              className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                              {...field}
+                          <div className='flex gap-2'>
+                            <FormControl>
+                              <Input
+                                type='number'
+                                placeholder='750'
+                                className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
+                                value={field.value || ''} // Display the numeric value
+                                onChange={(e) => field.onChange(e.target.value)}
+                              />
+                            </FormControl>
+                            <FormField
+                              control={form.control}
+                              name='currency'
+                              render={({ field }) => (
+                                <FormControl>
+                                  <select
+                                    className='w-24 border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
+                                    value={field.value}
+                                    onChange={(e) =>
+                                      field.onChange(e.target.value)
+                                    }
+                                  >
+                                    <option value='USD'>USD</option>
+                                    <option value='EUR'>EUR</option>
+                                    <option value='UAH'>UAH</option>
+                                  </select>
+                                </FormControl>
+                              )}
                             />
-                          </FormControl>
+                          </div>
                           <FormMessage className='text-error-main text-sm mt-1' />
                         </FormItem>
                       )}
@@ -353,6 +400,225 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
                       )}
                     />
                   </div>
+                </div>
+
+                {/* Co-Living Details section */}
+                <div>
+                  <h2 className='text-xl font-semibold text-primary-60 mb-4 pb-2 border-b border-gray-100'>
+                    Co-Living Details
+                  </h2>
+
+                  {/* Roommates */}
+                  <FormField
+                    control={form.control}
+                    name='coLivingDetails.roommates'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className='text-black font-semibold'>
+                          Roommates
+                        </FormLabel>
+                        <div className='space-y-4'>
+                          {(field.value || []).map(
+                            (
+                              roommate,
+                              index // Додано перевірку на undefined
+                            ) => (
+                              <div
+                                key={index}
+                                className='p-4 border border-gray-200 rounded-md space-y-4'
+                              >
+                                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                                  <div>
+                                    <FormLabel className='text-black'>
+                                      Name
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type='text'
+                                        placeholder='John Doe'
+                                        className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
+                                        value={roommate.name}
+                                        onChange={(e) => {
+                                          const newRoommates = [
+                                            ...(field.value || []),
+                                          ]; // Додано резервне значення
+                                          newRoommates[index].name =
+                                            e.target.value;
+                                          field.onChange(newRoommates);
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <FormMessage className='text-error-main text-sm mt-1' />
+                                  </div>
+
+                                  <div>
+                                    <FormLabel className='text-black'>
+                                      Age
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        type='number'
+                                        placeholder='25'
+                                        className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
+                                        value={roommate.age}
+                                        onChange={(e) => {
+                                          const newRoommates = [
+                                            ...(field.value || []),
+                                          ]; // Додано резервне значення
+                                          newRoommates[index].age = Number(
+                                            e.target.value
+                                          );
+                                          field.onChange(newRoommates);
+                                        }}
+                                      />
+                                    </FormControl>
+                                    <FormMessage className='text-error-main text-sm mt-1' />
+                                  </div>
+                                </div>
+
+                                <div>
+                                  <FormLabel className='text-black'>
+                                    Gender
+                                  </FormLabel>
+                                  <FormControl>
+                                    <select
+                                      className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
+                                      value={roommate.gender}
+                                      onChange={(e) => {
+                                        const newRoommates = [
+                                          ...(field.value || []),
+                                        ]; // Додано резервне значення
+                                        newRoommates[index].gender = e.target
+                                          .value as 'Male' | 'Female' | 'Other';
+                                        field.onChange(newRoommates);
+                                      }}
+                                    >
+                                      <option value='Male'>Male</option>
+                                      <option value='Female'>Female</option>
+                                      <option value='Other'>Other</option>
+                                    </select>
+                                  </FormControl>
+                                  <FormMessage className='text-error-main text-sm mt-1' />
+                                </div>
+
+                                <div>
+                                  <FormLabel className='text-black'>
+                                    Description
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Textarea
+                                      rows={3}
+                                      placeholder='Friendly and tidy person...'
+                                      className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
+                                      value={roommate.description || ''}
+                                      onChange={(e) => {
+                                        const newRoommates = [
+                                          ...(field.value || []),
+                                        ]; // Додано резервне значення
+                                        newRoommates[index].description =
+                                          e.target.value;
+                                        field.onChange(newRoommates);
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormMessage className='text-error-main text-sm mt-1' />
+                                </div>
+
+                                <Button
+                                  type='button'
+                                  onClick={() => removeRoommate(index)}
+                                  className='text-error-main hover:text-error-dark flex items-center gap-2'
+                                >
+                                  <IoTrashOutline /> Remove Roommate
+                                </Button>
+                              </div>
+                            )
+                          )}
+                          <Button
+                            type='button'
+                            onClick={addRoommate}
+                            className='bg-primary-main text-neutrals-white rounded-[33px] px-4 py-2 sh3B hover:bg-primary-60 transition-colors flex items-center gap-2'
+                          >
+                            <IoAdd /> Add Roommate
+                          </Button>
+                        </div>
+                        <FormMessage className='text-error-main text-sm mt-1' />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* House Rules */}
+                  <FormField
+                    control={form.control}
+                    name='coLivingDetails.houseRules'
+                    render={({ field }) => (
+                      <FormItem className='mt-6'>
+                        <FormLabel className='text-black font-semibold'>
+                          House Rules
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            rows={4}
+                            placeholder='Enter house rules (one per line)...'
+                            className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
+                            value={(field.value || []).join('\n')} // Додано перевірку на undefined
+                            onChange={(e) =>
+                              field.onChange(
+                                e.target.value
+                                  .split('\n')
+                                  .filter((rule) => rule.trim())
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage className='text-error-main text-sm mt-1' />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Shared Spaces */}
+                  <FormField
+                    control={form.control}
+                    name='coLivingDetails.sharedSpaces'
+                    render={({ field }) => (
+                      <FormItem className='mt-6'>
+                        <FormLabel className='text-black font-semibold'>
+                          Shared Spaces
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            rows={4}
+                            placeholder='Describe shared spaces (e.g., kitchen, bathroom)...'
+                            className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className='text-error-main text-sm mt-1' />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Schedule */}
+                  <FormField
+                    control={form.control}
+                    name='coLivingDetails.schedule'
+                    render={({ field }) => (
+                      <FormItem className='mt-6'>
+                        <FormLabel className='text-black font-semibold'>
+                          Schedule
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            rows={4}
+                            placeholder='Enter schedule (e.g., kitchen occupied from 18:00 to 19:00)...'
+                            className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className='text-error-main text-sm mt-1' />
+                      </FormItem>
+                    )}
+                  />
                 </div>
 
                 {/* Features & Description */}
