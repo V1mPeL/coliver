@@ -264,7 +264,7 @@ const ListingPage = async ({ params }: PageProps) => {
                               </div>
                               {roommate.description && (
                                 <p className='text-sm mt-1 text-neutrals-20 italic'>
-                                  "{roommate.description}"
+                                  &quot;{roommate.description}&quot;
                                 </p>
                               )}
                             </li>
