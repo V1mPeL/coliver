@@ -5,6 +5,7 @@ import { connectToDataBase } from '../mongoose';
 
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
 interface CreatingUserParams {
@@ -239,6 +240,9 @@ export async function checkAuth() {
         email: user.email,
         phoneNumber: user.phoneNumber,
         bio: user.bio,
+        savedListings: user.savedListings
+          ? user.savedListings.map((id: any) => id.toString())
+          : [],
       },
     };
   } catch (error: any) {
@@ -250,4 +254,50 @@ export async function logout() {
   const cookieStore = await cookies();
   cookieStore.delete('token');
   return { success: true };
+}
+
+export async function addToFavourite(listingId: string, userId: string) {
+  try {
+    await connectToDataBase();
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (user.savedListings.includes(listingId)) {
+      return { success: true, message: 'Listing already in favourites' };
+    }
+
+    await User.findByIdAndUpdate(userId, {
+      $push: { savedListings: listingId },
+    });
+
+    revalidatePath('/favourites');
+    return { success: true, message: 'Added to favourites' };
+  } catch (error: any) {
+    throw new Error(`Unable to add listing to favourites: ${error.message}`);
+  }
+}
+
+export async function removeFromFavourite(listingId: string, userId: string) {
+  try {
+    await connectToDataBase();
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    await User.findByIdAndUpdate(userId, {
+      $pull: { savedListings: listingId },
+    });
+
+    revalidatePath('/favourites');
+    return { success: true, message: 'Removed from favourites' };
+  } catch (error: any) {
+    throw new Error(
+      `Unable to remove listing from favourites: ${error.message}`
+    );
+  }
 }

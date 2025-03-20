@@ -32,6 +32,12 @@ const userSchema = new mongoose.Schema(
         ref: 'Listing',
       },
     ],
+    savedListings: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Listing',
+      },
+    ],
   },
   { timestamps: true }
 );

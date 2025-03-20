@@ -1,40 +1,27 @@
-'use client';
-import NoUser from '@/components/NoUser';
-import Spinner from '@/components/Spinner';
+import { Suspense } from 'react';
 import { checkAuth } from '@/lib/actions/user.actions';
-import React, { useEffect, useState } from 'react';
+import Spinner from '@/components/Spinner';
+import NoUser from '@/components/NoUser';
 
-const ProfilePage = () => {
-  const [isUser, setIsUser] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const verifyAuth = async () => {
-      try {
-        const result = await checkAuth();
-        setIsUser(result.isAuthenticated);
-      } catch (error) {
-        console.error('Failed to check auth:', error);
-        setIsUser(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    verifyAuth();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className='min-h-screen flex justify-center items-center'>
-        <Spinner />
-      </div>
-    );
+export default async function ProfilePage() {
+  let isAuthenticated = false;
+  try {
+    const result = await checkAuth();
+    isAuthenticated = result.isAuthenticated;
+  } catch (error) {
+    console.error('Failed to check auth:', error);
+    isAuthenticated = false;
   }
 
-  if (!isUser) return <NoUser />;
+  if (!isAuthenticated) {
+    return <NoUser />;
+  }
 
-  return <div>page</div>;
-};
-
-export default ProfilePage;
+  return (
+    <div className='min-h-screen flex justify-center items-center'>
+      <Suspense fallback={<Spinner />}>
+        <div>page</div>
+      </Suspense>
+    </div>
+  );
+}
