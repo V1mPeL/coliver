@@ -1,3 +1,4 @@
+// pages/listing/[listingId].tsx
 import React, { Suspense } from 'react';
 import { fetchSingleListing } from '@/lib/actions/listing.actions';
 import { FaPhoneAlt } from 'react-icons/fa';
@@ -54,6 +55,7 @@ interface Listing {
   preferences: string[];
   coLivingDetails?: CoLivingDetails;
   coordinates: { lat: number; lng: number };
+  createdAt: Date; // Додаємо поле createdAt до типу Listing
 }
 
 interface PageProps {
@@ -138,7 +140,7 @@ const ListingPage = async ({ params }: PageProps) => {
           </div>
         </div>
 
-        {/* Listing title, price, and location */}
+        {/* Listing title, price, location, and creation date */}
         <div className='w-full'>
           <div className='border-t pt-6 mt-6'>
             <div className='flex flex-col md:flex-row md:items-start md:justify-between'>
@@ -146,6 +148,9 @@ const ListingPage = async ({ params }: PageProps) => {
                 <h2 className='h2B text-neutrals-black'>{listing.title}</h2>
                 <p className='sh3S mt-2 text-neutrals-30'>
                   {listing.city}, st. {listing.street}
+                </p>
+                <p className='sh3S mt-1 text-neutrals-30'>
+                  Posted on: {format(listing.createdAt, 'dd.MM.yyyy HH:mm')}
                 </p>
               </div>
               <span className='sh2B mt-2 md:mt-0'>
@@ -222,7 +227,7 @@ const ListingPage = async ({ params }: PageProps) => {
               <div className='w-full lg:w-[35%] mt-6 lg:mt-0 relative'>
                 <div
                   className='w-full h-[300px] bg-neutrals-black flex items-center justify-center rounded-md'
-                  style={{ marginTop: '60px', zIndex: 1 }} // Додаємо відступ зверху та z-index
+                  style={{ marginTop: '60px', zIndex: 1 }}
                 >
                   <ListingMap
                     coordinates={{
@@ -264,7 +269,7 @@ const ListingPage = async ({ params }: PageProps) => {
                               </div>
                               {roommate.description && (
                                 <p className='text-sm mt-1 text-neutrals-20 italic'>
-                                  &quot;{roommate.description}&quot;
+                                  "{roommate.description}"
                                 </p>
                               )}
                             </li>
