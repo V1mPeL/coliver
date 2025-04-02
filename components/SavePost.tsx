@@ -11,9 +11,15 @@ interface SavePostProps {
   listingId: string;
   userId: string;
   userSavedListings: string[];
+  customClass?: string;
 }
 
-const SavePost = ({ listingId, userId, userSavedListings }: SavePostProps) => {
+const SavePost = ({
+  listingId,
+  userId,
+  userSavedListings,
+  customClass,
+}: SavePostProps) => {
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
@@ -46,7 +52,7 @@ const SavePost = ({ listingId, userId, userSavedListings }: SavePostProps) => {
       aria-label={isSaved ? 'Remove from favourites' : 'Add to favourites'}
       className={`text-2xl font-bold transition-colors transform hover:scale-110 ${
         isSaved ? 'text-primary-60' : 'text-neutrals-30 hover:text-primary-60'
-      }`}
+      } ${customClass}`}
     >
       {isSaved ? <FaHeart /> : <FaRegHeart />}
     </button>

@@ -3,7 +3,6 @@ import { Open_Sans } from 'next/font/google';
 import '@/app/globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-
 import { Toaster } from 'react-hot-toast';
 
 const openSans = Open_Sans({

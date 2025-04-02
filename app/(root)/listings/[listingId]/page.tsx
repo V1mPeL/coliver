@@ -72,6 +72,8 @@ const ListingPage = async ({ params }: PageProps) => {
 
   const user = await checkAuth();
 
+  const userSavedListings = user.user?.savedListings || [];
+
   const listing: Listing = await fetchSingleListing(listingId);
   const phoneNumber = parsePhoneNumber(listing.userId.phoneNumber);
 
@@ -81,7 +83,7 @@ const ListingPage = async ({ params }: PageProps) => {
         {/* Gallery and contact section */}
         <div className='flex flex-col lg:flex-row lg:justify-between lg:gap-10 mb-10'>
           {/* Gallery section */}
-          <div className='w-full lg:flex-1 mb-6 lg:mb-0'>
+          <div className='w-full lg:flex-1 mb-6 lg:mb-0 mt-10 md:mt-0'>
             <ImageGallery photos={listing.photos} />
           </div>
           {/* Contact section */}
@@ -99,7 +101,7 @@ const ListingPage = async ({ params }: PageProps) => {
                   <SavePost
                     listingId={listingId}
                     userId={user.user?.id}
-                    userSavedListings={user.user?.savedListings}
+                    userSavedListings={userSavedListings}
                   />
                 </div>
               </div>
@@ -269,7 +271,7 @@ const ListingPage = async ({ params }: PageProps) => {
                               </div>
                               {roommate.description && (
                                 <p className='text-sm mt-1 text-neutrals-20 italic'>
-                                  "{roommate.description}"
+                                  &quot;{roommate.description}&quot;
                                 </p>
                               )}
                             </li>

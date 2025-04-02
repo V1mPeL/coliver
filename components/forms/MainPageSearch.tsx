@@ -1,55 +1,45 @@
 'use client';
-import { z } from 'zod';
-import { Form, FormControl, FormField } from '../ui/form';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { searchCityValidation } from '@/lib/validations/searchValidation';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AiOutlineSearch } from 'react-icons/ai';
 
-const MainPageSearch = () => {
+const MainPageSearch: React.FC = () => {
   const router = useRouter();
-  const onSubmit = (values: z.infer<typeof searchCityValidation>) => {
-    router.push(`/browse?city=${values.search_city}`);
+  const [searchCity, setSearchCity] = useState<string>('');
+
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    setSearchCity(event.target.value);
   };
 
-  const form = useForm<z.infer<typeof searchCityValidation>>({
-    resolver: zodResolver(searchCityValidation),
-    defaultValues: {
-      search_city: '',
-    },
-  });
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    if (searchCity.trim()) {
+      router.push(`/browse?query=${encodeURIComponent(searchCity.trim())}`);
+    }
+  };
 
   return (
     <div className='p-4 flex items-center mt-8 h-[55px] w-[300px] sm:w-[480px] md:w-[680px] lg:w-[880px] bg-white rounded-[30px]'>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='w-full'>
-          <FormField
-            control={form.control}
-            name='search_city'
-            render={({ field }) => (
-              <FormControl>
-                <div className=' flex items-center justify-between'>
-                  <Input
-                    type='text'
-                    placeholder='Search location...'
-                    className='w-[90%] px-8 !text-xl !font-semibold border-none no-focus '
-                    {...field}
-                  />
-                  <Button
-                    type='submit'
-                    className='transition-all duration-300 hover:bg-primary-60 bg-primary-main h-[45px] w-[45px] rounded-full'
-                  >
-                    <AiOutlineSearch className='text-neutrals-white ' />
-                  </Button>
-                </div>
-              </FormControl>
-            )}
-          />
-        </form>
-      </Form>
+      <form
+        onSubmit={handleSubmit}
+        className='w-full flex items-center justify-between'
+      >
+        <input
+          type='text'
+          value={searchCity}
+          onChange={handleInputChange}
+          placeholder='Search location...'
+          className='w-[90%] px-8 text-xl font-semibold border-none focus:outline-none'
+        />
+        <button
+          type='submit'
+          className='transition-all duration-300 hover:bg-primary-60 bg-primary-main h-[45px] w-[45px] rounded-full flex items-center justify-center'
+        >
+          <AiOutlineSearch className='text-neutrals-white' />
+        </button>
+      </form>
     </div>
   );
 };

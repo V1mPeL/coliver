@@ -97,3 +97,49 @@ export async function fetchSingleListing(listingId: string) {
     throw new Error(`Unable to fetch listing ${error.message}`);
   }
 }
+
+export async function fetchListings() {
+  await connectToDataBase();
+
+  try {
+    const listingsQuery = Listing.find()
+      .select(
+        '_id street city price currency floor description capacity photos coLivingDetails.roommates updatedAt coordinates'
+      )
+      .sort({ createdAt: 'desc' });
+
+    const listings = await listingsQuery.exec();
+
+    // Серіалізуємо об'єкти
+    const serializedListings = listings.map((listing) => {
+      const plainListing = listing.toObject();
+
+      return {
+        ...plainListing,
+        _id: plainListing._id.toString(),
+        createdAt: plainListing.createdAt?.toISOString(),
+        updatedAt: plainListing.updatedAt.toISOString(),
+        coordinates: {
+          lat: plainListing.coordinates.lat,
+          lng: plainListing.coordinates.lng,
+        },
+        coLivingDetails: plainListing.coLivingDetails
+          ? {
+              roommates: plainListing.coLivingDetails.roommates
+                ? plainListing.coLivingDetails.roommates.map(
+                    (roommate: any) => ({
+                      ...roommate,
+                      _id: roommate._id.toString(),
+                    })
+                  )
+                : [],
+            }
+          : undefined,
+      };
+    });
+
+    return { success: true, listings: serializedListings };
+  } catch (error: any) {
+    throw new Error(`Unable to fetch listings: ${error.message}`);
+  }
+}

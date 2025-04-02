@@ -389,7 +389,7 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
                           </FormLabel>
                           <FormControl>
                             <Input
-                              type='number'
+                              type='string'
                               placeholder='1'
                               className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
                               {...field}

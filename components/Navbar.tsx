@@ -20,7 +20,7 @@ const Navbar = () => {
   useEffect(() => {
     const verifyAuth = async () => {
       try {
-        const result = await checkAuth(); // Викликаємо серверну функцію
+        const result = await checkAuth();
         setIsUser(result.isAuthenticated);
       } catch (error) {
         console.error('Failed to check auth:', error);
@@ -32,13 +32,12 @@ const Navbar = () => {
   }, [pathname]);
 
   const handleLogout = async () => {
-    await logout(); // Викликаємо серверну функцію для видалення токена
+    await logout();
     setIsUser(false);
     router.push('/');
     toast.success('Logged out successfully!');
   };
 
-  // Логіка для скролу та меню залишається без змін
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
@@ -69,14 +68,22 @@ const Navbar = () => {
   return (
     <header
       className={`fixed top-0 left-0 w-full ${
-        pathname === '/' && !isScrolled ? 'bg-transparent' : 'bg-neutrals-60'
+        pathname === '/' && !isScrolled
+          ? 'bg-transparent'
+          : 'bg-neutrals-90 shadow-md opacity-95'
       } z-50 transition-colors duration-500 ease-in-out`}
     >
       <div className='container'>
         <div className='flex items-center justify-between h-16'>
           <div className='flex items-center'>
             <Link href='/' className='flex items-center'>
-              <div className='text-neutrals-white flex items-center gap-2'>
+              <div
+                className={`${
+                  pathname === '/' && !isScrolled
+                    ? 'text-neutrals-white '
+                    : 'text-neutrals-black'
+                } flex items-center gap-2`}
+              >
                 <Image
                   src='/assets/logo.png'
                   alt='Logo'
@@ -95,7 +102,11 @@ const Navbar = () => {
                 <Link
                   href={link.route}
                   key={link.label}
-                  className={`flex justify-between items-center gap-2 sh3s text-neutrals-white transition-all duration-300 hover:text-primary-60 ${
+                  className={`${
+                    pathname === '/' && !isScrolled
+                      ? 'text-neutrals-white '
+                      : 'text-neutrals-black'
+                  } flex justify-between items-center gap-2 sh3s transition-all duration-300 hover:text-primary-60 ${
                     link.route === pathname ? 'text-primary-60' : ''
                   } `}
                 >
@@ -109,18 +120,25 @@ const Navbar = () => {
                 <div className='flex justify-center gap-4'>
                   <Link
                     href='/profile'
-                    className={`flex justify-between items-center gap-2 sh3s text-neutrals-white transition-all duration-300 hover:text-primary-60 ${
+                    className={`${
+                      pathname === '/' && !isScrolled
+                        ? 'text-neutrals-white '
+                        : 'text-neutrals-black'
+                    } flex justify-between items-center gap-2 sh3s transition-all duration-300 hover:text-primary-60 ${
                       pathname == '/profile' ? 'text-primary-60' : ''
                     } `}
                   >
                     <AiOutlineUser className='w-6 h-6' />
                     Profile
                   </Link>
-                  <Button
-                    className='!bg-transparent sh3S text-neutrals-white transition-all duration-300 hover:text-primary-60'
-                    onClick={handleLogout}
-                  >
-                    <BiLogOut className='w-6 h-6' />
+                  <Button className='!bg-transparent ' onClick={handleLogout}>
+                    <BiLogOut
+                      className={`${
+                        pathname === '/' && !isScrolled
+                          ? 'text-neutrals-white '
+                          : 'text-neutrals-black'
+                      } w-6 h-6 sh3S transition-all duration-300 hover:text-primary-60`}
+                    />
                   </Button>
                 </div>
               ) : (

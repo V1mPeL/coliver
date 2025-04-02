@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
@@ -15,58 +15,29 @@ interface ImageGalleryProps {
 const ImageGallery = ({ photos }: ImageGalleryProps) => {
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // Вирішуємо, чи використовувати слайдер
-  const useSlider = isMobile || photos.length > 6;
+  // If there are no photos, return early
+  if (!photos || photos.length === 0) {
+    return <div>No photos available</div>;
+  }
 
   return (
     <div className='image-gallery-container'>
-      {useSlider ? (
-        <Swiper
-          modules={[Navigation, Pagination]}
-          navigation
-          pagination={{ clickable: true }}
-          spaceBetween={10}
-          slidesPerView={isMobile ? 1 : 3}
-          className='w-full'
-        >
-          {photos.map((photo, i) => (
-            <SwiperSlide key={i}>
-              <div
-                className='relative w-full h-48 cursor-pointer'
-                onClick={() => {
-                  setIndex(i);
-                  setOpen(true);
-                }}
-              >
-                <Image
-                  src={photo}
-                  alt={`Gallery image ${i + 1}`}
-                  fill
-                  objectFit='cover'
-                  className='rounded-lg'
-                />
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      ) : (
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-          {photos.map((photo, i) => (
+      {/* Centered Slider */}
+      <Swiper
+        modules={[Navigation, Pagination]}
+        navigation
+        pagination={{ clickable: true }}
+        spaceBetween={10}
+        slidesPerView={1} // Show only 1 photo at a time
+        centeredSlides={true} // Center the active slide
+        className='w-full max-w-[800px] mx-auto' // Match the approximate width of the 3x2 grid
+        onSlideChange={(swiper) => setIndex(swiper.activeIndex)} // Update index when slide changes
+      >
+        {photos.map((photo, i) => (
+          <SwiperSlide key={i}>
             <div
-              key={i}
-              className='relative w-full h-48 cursor-pointer'
+              className='relative w-full h-[300px] md:h-[450px] cursor-pointer' // Match the approximate height of the 3x2 grid
               onClick={() => {
                 setIndex(i);
                 setOpen(true);
@@ -76,14 +47,15 @@ const ImageGallery = ({ photos }: ImageGalleryProps) => {
                 src={photo}
                 alt={`Gallery image ${i + 1}`}
                 fill
-                objectFit='cover'
+                objectFit='cover' // Use cover to maintain aspect ratio
                 className='rounded-lg'
               />
             </div>
-          ))}
-        </div>
-      )}
+          </SwiperSlide>
+        ))}
+      </Swiper>
 
+      {/* Lightbox for full-screen view */}
       {open && (
         <CustomLightbox
           images={photos}

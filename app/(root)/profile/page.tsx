@@ -172,7 +172,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className='container min-h-screen flex items-center justify-center py-10'>
+    <div className='container min-h-screen flex items-center justify-center py-16'>
       <div className='max-w-4xl w-full bg-neutrals-white dark:bg-neutrals-20 rounded-lg shadow-lg p-8'>
         <div className='flex flex-col items-center mb-3'>
           <div className='relative w-32 h-32 mb-4'>

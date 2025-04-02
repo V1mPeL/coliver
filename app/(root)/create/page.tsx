@@ -38,7 +38,7 @@ const Page = () => {
   if (!isUser) return <NoUser />;
 
   return (
-    <div className='container min-h-screen flex items-center justify-center py-10'>
+    <div className='container min-h-screen flex items-center justify-center py-16'>
       <CreateListingForm userId={userId} />
     </div>
   );

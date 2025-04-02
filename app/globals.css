@@ -7,6 +7,7 @@
   .container {
     @apply max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8;
   }
+
   .container-sm {
     @apply max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8; /* Менша ширина */
   }
@@ -79,47 +80,34 @@
     --radius: 0.5rem;
   }
 }
-image-gallery-container {
-  position: relative;
-  z-index: 1;
-}
-
-@media (max-width: 640px) {
-  .image-gallery-container {
-    margin-top: 40px;
-  }
-}
-.swiper {
-  padding-bottom: 40px;
-}
-
-.swiper-slide {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.swiper-button-next,
-.swiper-button-prev {
-  color: #ffffff;
+.image-gallery-container .swiper-button-next,
+.image-gallery-container .swiper-button-prev {
+  color: #3b82f6; /* Blue color for arrows, matching the screenshot */
   width: 40px;
   height: 40px;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.8
+  ); /* Slight white background for visibility */
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.swiper-button-next:after,
-.swiper-button-prev:after {
-  font-size: 20px;
+.image-gallery-container .swiper-button-next::after,
+.image-gallery-container .swiper-button-prev::after {
+  font-size: 20px; /* Adjust arrow size */
 }
 
-.swiper-pagination-bullet {
-  background: #ffffff;
+.image-gallery-container .swiper-pagination-bullet {
+  background: #d1d5db; /* Light gray for inactive dots */
   opacity: 0.5;
 }
 
-.swiper-pagination-bullet-active {
+.image-gallery-container .swiper-pagination-bullet-active {
+  background: #3b82f6; /* Blue for active dot */
   opacity: 1;
-  background: #ffffff;
 }
