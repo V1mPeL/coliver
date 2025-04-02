@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
-import SavePost from './SavePost';
+// import SavePost from './SavePost';
 import { MdBed } from 'react-icons/md';
 import { IoPeopleSharp } from 'react-icons/io5';
 import { FaRegBuilding } from 'react-icons/fa';
