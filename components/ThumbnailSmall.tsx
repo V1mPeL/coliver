@@ -1,29 +1,53 @@
 import React from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 
-const ThumbnailSmall = () => {
+interface ThumbnailSmallProps {
+  listing?: {
+    _id: string;
+    photos: string[];
+    price: number;
+    currency: string;
+    street: string;
+    city: string;
+    capacity: number;
+    floor: number;
+  };
+}
+
+const ThumbnailSmall: React.FC<ThumbnailSmallProps> = ({ listing }) => {
+  if (!listing) {
+    return (
+      <div className='w-[calc(50%-0.5rem)] sm:w-[calc(25%-0.5rem)] h-64 bg-gray-200 rounded-lg animate-pulse' />
+    );
+  }
+
   return (
-    <div className='w-64 rounded overflow-hidden shadow-sm bg-white'>
-      {/* Skeleton image placeholder - зменшена висота */}
-      <div className='h-32 bg-gray-200 animate-pulse relative'>
-        {/* Skeleton badge placeholder */}
-        <div className='absolute top-2 left-2 w-8 h-4 rounded-full bg-gray-300 animate-pulse'></div>
+    <Link
+      href={`/listings/${listing._id}`}
+      className='w-[calc(50%-0.5rem)] sm:w-[calc(25%-0.5rem)]'
+    >
+      <div className='relative w-full h-40 rounded-lg overflow-hidden'>
+        {listing.photos && listing.photos.length > 0 ? (
+          <Image
+            src={listing.photos[0]}
+            alt={listing.street}
+            layout='fill'
+            objectFit='cover'
+            className='rounded-lg'
+          />
+        ) : (
+          <div className='w-full h-full bg-gray-300 flex items-center justify-center'>
+            <span>No Image</span>
+          </div>
+        )}
       </div>
-
-      {/* Skeleton content - зменшені відступи */}
-      <div className='p-2'>
-        {/* Skeleton location text */}
-        <div className='h-3 w-3/4 bg-gray-200 rounded animate-pulse mb-2'></div>
-
-        {/* Skeleton property details */}
-        <div className='h-4 w-full bg-gray-200 rounded animate-pulse mb-2'></div>
-
-        {/* Skeleton price */}
-        <div className='h-5 w-1/2 bg-gray-300 rounded animate-pulse mb-1'></div>
-
-        {/* Skeleton deposit info */}
-        <div className='h-3 w-3/4 bg-gray-200 rounded animate-pulse'></div>
+      <div className='mt-2'>
+        <h3 className='text-lg font-semibold'>{`${listing.price} ${listing.currency}`}</h3>
+        <p className='text-sm text-gray-600'>{`${listing.street}, ${listing.city}`}</p>
+        <p className='text-sm text-gray-600'>{`Capacity: ${listing.capacity} | Floor: ${listing.floor}`}</p>
       </div>
-    </div>
+    </Link>
   );
 };
 

@@ -1,4 +1,3 @@
-// pages/listing/[listingId].tsx
 import React, { Suspense } from 'react';
 import { fetchSingleListing } from '@/lib/actions/listing.actions';
 import { FaPhoneAlt } from 'react-icons/fa';

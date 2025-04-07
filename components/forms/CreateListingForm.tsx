@@ -1,3 +1,4 @@
+// components/CreateListingForm.tsx
 'use client';
 
 import { z } from 'zod';
@@ -16,47 +17,83 @@ import Button from '../Button';
 import { Input } from '../ui/input';
 import { useState } from 'react';
 import { listingValidation } from '@/lib/validations/listing.validation';
-import { IoCameraOutline } from 'react-icons/io5';
-import { IoAdd, IoTrashOutline } from 'react-icons/io5';
+import { IoCameraOutline, IoAdd, IoTrashOutline } from 'react-icons/io5';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import { amenities, preferences } from '@/constants/constants';
 import { Checkbox } from '@/components/ui/checkbox';
 import { isBase64Image, streetToGeocode } from '@/lib/utils';
-import { createListing } from '@/lib/actions/listing.actions';
+import { createListing, updateListing } from '@/lib/actions/listing.actions';
 import { useRouter } from 'next/navigation';
+import { Listing } from '@/types/listings';
 
 interface Coordinates {
   lat: number;
   lng: number;
 }
 
-const CreateListingForm = ({ userId }: { userId: string }) => {
+interface Props {
+  userId: string;
+  listing?: Listing; // Optional listing data for editing
+}
+
+const CreateListingForm = ({ userId, listing }: Props) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadedPhotos, setUploadedPhotos] = useState<string[]>([]);
+  const [uploadedPhotos, setUploadedPhotos] = useState<string[]>(
+    listing?.photos || []
+  );
+
+  // Determine if we're in edit mode
+  const isEditing = !!listing;
 
   const form = useForm<z.infer<typeof listingValidation>>({
     resolver: zodResolver(listingValidation),
-    defaultValues: {
-      title: '',
-      city: '',
-      street: '',
-      price: 0,
-      currency: 'USD',
-      floor: 0,
-      preferences: [],
-      amenities: [],
-      description: '',
-      capacity: 1,
-      photos: [],
-      coLivingDetails: {
-        roommates: [],
-        houseRules: [],
-        sharedSpaces: '',
-        schedule: '',
-      },
-    },
+    defaultValues: isEditing
+      ? {
+          title: listing.title || '',
+          city: listing.city || '',
+          street: listing.street || '',
+          price: listing.price || 0,
+          currency: listing.currency || 'USD',
+          floor: listing.floor || 0,
+          preferences: listing.preferences || [],
+          amenities: listing.amenities || [],
+          description: listing.description || '',
+          capacity: listing.capacity || 1,
+          photos: listing.photos || [],
+          coLivingDetails: {
+            roommates:
+              listing.coLivingDetails?.roommates?.map((roommate) => ({
+                name: roommate.name,
+                age: roommate.age,
+                gender: roommate.gender,
+                description: roommate.description || '',
+              })) || [],
+            houseRules: listing.coLivingDetails?.houseRules || [],
+            sharedSpaces: listing.coLivingDetails?.sharedSpaces || '',
+            schedule: listing.coLivingDetails?.schedule || '',
+          },
+        }
+      : {
+          title: '',
+          city: '',
+          street: '',
+          price: 0,
+          currency: 'USD',
+          floor: 0,
+          preferences: [],
+          amenities: [],
+          description: '',
+          capacity: 1,
+          photos: [],
+          coLivingDetails: {
+            roommates: [],
+            houseRules: [],
+            sharedSpaces: '',
+            schedule: '',
+          },
+        },
   });
 
   const uploadToCloudinary = async (imageData: string[]): Promise<string[]> => {
@@ -119,7 +156,7 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
         photoUrls = [...existingUrls, ...photoUrls];
       }
 
-      const result = await createListing({
+      const listingData = {
         title: values.title,
         city: values.city,
         street: values.street,
@@ -133,15 +170,33 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
         photos: photoUrls,
         coordinates: coordinates,
         userId: userId,
-        coLivingDetails: values.coLivingDetails, // Додано нові поля
-      });
+        coLivingDetails: values.coLivingDetails,
+      };
+
+      let result;
+      if (isEditing && listing?._id) {
+        result = await updateListing({
+          ...listingData,
+          listingId: listing._id,
+        });
+      } else {
+        result = await createListing(listingData);
+      }
 
       if (result.success) {
         router.push(`/listings/${result.listingId}`);
-        toast.success('Listing created successfully!');
+        toast.success(
+          isEditing
+            ? 'Listing updated successfully!'
+            : 'Listing created successfully!'
+        );
       }
     } catch (error: any) {
-      toast.error(`Failed to create listing: ${error.message}`);
+      toast.error(
+        `${isEditing ? 'Failed to update' : 'Failed to create'} listing: ${
+          error.message
+        }`
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -149,7 +204,7 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
 
   const handleReset = () => {
     form.reset();
-    setUploadedPhotos([]);
+    setUploadedPhotos(isEditing ? listing?.photos || [] : []);
   };
 
   const handleImage = (
@@ -197,7 +252,6 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
     }
   };
 
-  // Динамічне додавання співмешканця
   const addRoommate = () => {
     const currentRoommates = form.getValues('coLivingDetails.roommates') || [];
     form.setValue('coLivingDetails.roommates', [
@@ -206,7 +260,6 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
     ]);
   };
 
-  // Видалення співмешканця
   const removeRoommate = (index: number) => {
     const currentRoommates = form.getValues('coLivingDetails.roommates') || [];
     form.setValue(
@@ -219,7 +272,7 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
     <div className='container min-h-screen py-10'>
       <div className='max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden'>
         <h1 className='text-primary-60 h2B text-center py-6 border-b border-gray-100'>
-          Create Listing
+          {isEditing ? 'Edit Listing' : 'Create Listing'}
         </h1>
 
         <Form {...form}>
@@ -266,11 +319,19 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
                           <div className='flex gap-2'>
                             <FormControl>
                               <Input
-                                type='number'
+                                type='text' // Use type="text" to handle string input
                                 placeholder='750'
                                 className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                                value={field.value || ''} // Display the numeric value
-                                onChange={(e) => field.onChange(e.target.value)}
+                                value={field.value.toString()} // Convert number to string
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  // Allow empty string or valid number
+                                  if (value === '' || !isNaN(Number(value))) {
+                                    field.onChange(
+                                      value === '' ? 0 : Number(value)
+                                    );
+                                  }
+                                }}
                               />
                             </FormControl>
                             <FormField
@@ -368,10 +429,19 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
                           </FormLabel>
                           <FormControl>
                             <Input
-                              type='number'
+                              type='text' // Use type="text" to handle string input
                               placeholder='2'
                               className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                              {...field}
+                              value={field.value.toString()} // Convert number to string
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                // Allow empty string or valid number
+                                if (value === '' || !isNaN(Number(value))) {
+                                  field.onChange(
+                                    value === '' ? 0 : Number(value)
+                                  );
+                                }
+                              }}
                             />
                           </FormControl>
                           <FormMessage className='text-error-main text-sm mt-1' />
@@ -389,10 +459,19 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
                           </FormLabel>
                           <FormControl>
                             <Input
-                              type='string'
+                              type='text' // Use type="text" to handle string input
                               placeholder='1'
                               className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                              {...field}
+                              value={field.value.toString()} // Convert number to string
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                // Allow empty string or valid number
+                                if (value === '' || !isNaN(Number(value))) {
+                                  field.onChange(
+                                    value === '' ? 1 : Number(value)
+                                  );
+                                }
+                              }}
                             />
                           </FormControl>
                           <FormMessage className='text-error-main text-sm mt-1' />
@@ -418,104 +497,27 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
                           Roommates
                         </FormLabel>
                         <div className='space-y-4'>
-                          {(field.value || []).map(
-                            (
-                              roommate,
-                              index // Додано перевірку на undefined
-                            ) => (
-                              <div
-                                key={index}
-                                className='p-4 border border-gray-200 rounded-md space-y-4'
-                              >
-                                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                                  <div>
-                                    <FormLabel className='text-black'>
-                                      Name
-                                    </FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        type='text'
-                                        placeholder='John Doe'
-                                        className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                                        value={roommate.name}
-                                        onChange={(e) => {
-                                          const newRoommates = [
-                                            ...(field.value || []),
-                                          ]; // Додано резервне значення
-                                          newRoommates[index].name =
-                                            e.target.value;
-                                          field.onChange(newRoommates);
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormMessage className='text-error-main text-sm mt-1' />
-                                  </div>
-
-                                  <div>
-                                    <FormLabel className='text-black'>
-                                      Age
-                                    </FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        type='number'
-                                        placeholder='25'
-                                        className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                                        value={roommate.age}
-                                        onChange={(e) => {
-                                          const newRoommates = [
-                                            ...(field.value || []),
-                                          ]; // Додано резервне значення
-                                          newRoommates[index].age = Number(
-                                            e.target.value
-                                          );
-                                          field.onChange(newRoommates);
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <FormMessage className='text-error-main text-sm mt-1' />
-                                  </div>
-                                </div>
-
+                          {(field.value || []).map((roommate, index) => (
+                            <div
+                              key={index}
+                              className='p-4 border border-gray-200 rounded-md space-y-4'
+                            >
+                              <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                                 <div>
                                   <FormLabel className='text-black'>
-                                    Gender
+                                    Name
                                   </FormLabel>
                                   <FormControl>
-                                    <select
+                                    <Input
+                                      type='text'
+                                      placeholder='John Doe'
                                       className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                                      value={roommate.gender}
+                                      value={roommate.name}
                                       onChange={(e) => {
                                         const newRoommates = [
                                           ...(field.value || []),
-                                        ]; // Додано резервне значення
-                                        newRoommates[index].gender = e.target
-                                          .value as 'Male' | 'Female' | 'Other';
-                                        field.onChange(newRoommates);
-                                      }}
-                                    >
-                                      <option value='Male'>Male</option>
-                                      <option value='Female'>Female</option>
-                                      <option value='Other'>Other</option>
-                                    </select>
-                                  </FormControl>
-                                  <FormMessage className='text-error-main text-sm mt-1' />
-                                </div>
-
-                                <div>
-                                  <FormLabel className='text-black'>
-                                    Description
-                                  </FormLabel>
-                                  <FormControl>
-                                    <Textarea
-                                      rows={3}
-                                      placeholder='Friendly and tidy person...'
-                                      className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                                      value={roommate.description || ''}
-                                      onChange={(e) => {
-                                        const newRoommates = [
-                                          ...(field.value || []),
-                                        ]; // Додано резервне значення
-                                        newRoommates[index].description =
+                                        ];
+                                        newRoommates[index].name =
                                           e.target.value;
                                         field.onChange(newRoommates);
                                       }}
@@ -524,16 +526,94 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
                                   <FormMessage className='text-error-main text-sm mt-1' />
                                 </div>
 
-                                <Button
-                                  type='button'
-                                  onClick={() => removeRoommate(index)}
-                                  className='text-error-main hover:text-error-dark flex items-center gap-2'
-                                >
-                                  <IoTrashOutline /> Remove Roommate
-                                </Button>
+                                <div>
+                                  <FormLabel className='text-black'>
+                                    Age
+                                  </FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      type='text' // Use type="text" to handle string input
+                                      placeholder='25'
+                                      className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
+                                      value={roommate.age.toString()} // Convert number to string
+                                      onChange={(e) => {
+                                        const value = e.target.value;
+                                        // Allow empty string or valid number
+                                        if (
+                                          value === '' ||
+                                          !isNaN(Number(value))
+                                        ) {
+                                          const newRoommates = [
+                                            ...(field.value || []),
+                                          ];
+                                          newRoommates[index].age =
+                                            value === '' ? 0 : Number(value);
+                                          field.onChange(newRoommates);
+                                        }
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormMessage className='text-error-main text-sm mt-1' />
+                                </div>
                               </div>
-                            )
-                          )}
+
+                              <div>
+                                <FormLabel className='text-black'>
+                                  Gender
+                                </FormLabel>
+                                <FormControl>
+                                  <select
+                                    className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
+                                    value={roommate.gender}
+                                    onChange={(e) => {
+                                      const newRoommates = [
+                                        ...(field.value || []),
+                                      ];
+                                      newRoommates[index].gender = e.target
+                                        .value as 'Male' | 'Female' | 'Other';
+                                      field.onChange(newRoommates);
+                                    }}
+                                  >
+                                    <option value='Male'>Male</option>
+                                    <option value='Female'>Female</option>
+                                    <option value='Other'>Other</option>
+                                  </select>
+                                </FormControl>
+                                <FormMessage className='text-error-main text-sm mt-1' />
+                              </div>
+
+                              <div>
+                                <FormLabel className='text-black'>
+                                  Description
+                                </FormLabel>
+                                <FormControl>
+                                  <Textarea
+                                    rows={3}
+                                    placeholder='Friendly and tidy person...'
+                                    className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
+                                    value={roommate.description || ''}
+                                    onChange={(e) => {
+                                      const newRoommates = [
+                                        ...(field.value || []),
+                                      ];
+                                      newRoommates[index].description =
+                                        e.target.value;
+                                      field.onChange(newRoommates);
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormMessage className='text-error-main text-sm mt-1' />
+                              </div>
+
+                              <Button
+                                type='button'
+                                onClick={() => removeRoommate(index)}
+                                className='text-error-main hover:text-error-dark flex items-center gap-2'
+                              >
+                                <IoTrashOutline /> Remove Roommate
+                              </Button>
+                            </div>
+                          ))}
                           <Button
                             type='button'
                             onClick={addRoommate}
@@ -561,7 +641,7 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
                             rows={4}
                             placeholder='Enter house rules (one per line)...'
                             className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                            value={(field.value || []).join('\n')} // Додано перевірку на undefined
+                            value={(field.value || []).join('\n')}
                             onChange={(e) =>
                               field.onChange(
                                 e.target.value
@@ -818,7 +898,13 @@ const CreateListingForm = ({ userId }: { userId: string }) => {
                 disabled={isSubmitting}
                 className='bg-primary-main text-neutrals-white rounded-[33px] px-6 py-3 sh3B hover:bg-primary-60 transition-colors disabled:bg-neutrals-40 disabled:cursor-not-allowed'
               >
-                {isSubmitting ? 'Creating...' : 'Create Listing'}
+                {isSubmitting
+                  ? isEditing
+                    ? 'Updating...'
+                    : 'Creating...'
+                  : isEditing
+                  ? 'Update Listing'
+                  : 'Create Listing'}
               </Button>
               <Button
                 type='reset'

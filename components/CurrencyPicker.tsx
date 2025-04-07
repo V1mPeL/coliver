@@ -10,7 +10,7 @@ interface CurrencyOption {
 const CurrencyPicker: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const initialCurrency = searchParams.get('currency') || 'UAH';
+  const initialCurrency = searchParams.get('currency') || ''; // Default to empty string
   const [selectedCurrency, setSelectedCurrency] =
     useState<string>(initialCurrency);
 
@@ -22,10 +22,10 @@ const CurrencyPicker: React.FC = () => {
 
   const updateCurrencyParam = (value: string): void => {
     const params = new URLSearchParams(searchParams.toString());
-    if (value === 'UAH') {
-      params.delete('currency');
+    if (value) {
+      params.set('currency', value); // Always set the currency parameter
     } else {
-      params.set('currency', value);
+      params.delete('currency'); // Remove the parameter to show all currencies
     }
     router.push(`?${params.toString()}`, { scroll: false });
   };
@@ -35,8 +35,14 @@ const CurrencyPicker: React.FC = () => {
     updateCurrencyParam(value);
   };
 
+  // Add a function to clear the currency selection
+  const clearCurrencySelection = (): void => {
+    setSelectedCurrency('');
+    updateCurrencyParam('');
+  };
+
   useEffect(() => {
-    const currentCurrency = searchParams.get('currency') || 'UAH';
+    const currentCurrency = searchParams.get('currency') || '';
     setSelectedCurrency(currentCurrency);
   }, [searchParams]);
 
@@ -48,13 +54,24 @@ const CurrencyPicker: React.FC = () => {
           className={`bodyB py-2 px-4 rounded-[12px] transition-all duration-200 ${
             selectedCurrency === currency.value
               ? 'bg-primary-main text-neutrals-white'
-              : 'bg-transparent hover:bg-primary-main'
+              : 'bg-transparent hover:bg-primary-main hover:text-neutrals-white'
           }`}
           onClick={() => handleCurrencyChange(currency.value)}
         >
           {currency.label}
         </button>
       ))}
+      {/* Add a button to clear the currency selection */}
+      <button
+        className={`bodyB py-2 px-4 rounded-[12px] transition-all duration-200 ${
+          selectedCurrency === ''
+            ? 'bg-primary-main text-neutrals-white'
+            : 'bg-transparent hover:bg-primary-main hover:text-neutrals-white'
+        }`}
+        onClick={clearCurrencySelection}
+      >
+        All
+      </button>
     </div>
   );
 };

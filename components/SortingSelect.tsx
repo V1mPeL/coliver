@@ -11,7 +11,7 @@ interface SortOption {
 const SortingSelect: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const initialSort = searchParams.get('sorting') || 'cheapest';
+  const initialSort = searchParams.get('sorting') || 'date-newest'; // Default to 'date-newest'
   const [sortValue, setSortValue] = useState<string>(initialSort);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
@@ -25,8 +25,8 @@ const SortingSelect: React.FC = () => {
 
   const updateSortParam = (value: string): void => {
     const params = new URLSearchParams(searchParams.toString());
-    if (value === 'cheapest') {
-      params.delete('sorting');
+    if (value === 'date-newest') {
+      params.delete('sorting'); // Remove sorting param for default option
     } else {
       params.set('sorting', value);
     }
@@ -62,9 +62,9 @@ const SortingSelect: React.FC = () => {
     options.find((option) => option.value === sortValue)?.label || 'Sort by';
 
   return (
-    <div className='relative ' ref={dropdownRef}>
+    <div className='relative' ref={dropdownRef}>
       <div
-        className=' transition-all duration-300 bodyB w-full h-10 px-4 flex items-center justify-between rounded-lg cursor-pointer border border-neutrals-80 bg-neutrals-90 hover:bg-primary-main hover:text-neutrals-white'
+        className='transition-all duration-300 bodyB w-full h-10 px-4 flex items-center justify-between rounded-lg cursor-pointer border border-neutrals-80 bg-neutrals-90 hover:bg-primary-main hover:text-neutrals-white'
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className='hidden sm:block mr-2'>{currentLabel}</span>
@@ -78,7 +78,7 @@ const SortingSelect: React.FC = () => {
               key={option.value}
               className={`bodyB px-4 py-2 cursor-pointer hover:bg-primary-main rounded-lg hover:text-neutrals-white transition-colors ${
                 sortValue === option.value
-                  ? 'bg-primary-main text-neutrals-white '
+                  ? 'bg-primary-main text-neutrals-white'
                   : ''
               }`}
               onClick={() => handleOptionClick(option.value)}

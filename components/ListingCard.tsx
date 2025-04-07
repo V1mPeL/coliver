@@ -1,6 +1,5 @@
 import Image from 'next/image';
-import React from 'react';
-// import SavePost from './SavePost';
+import React, { useState } from 'react';
 import { MdBed } from 'react-icons/md';
 import { IoPeopleSharp } from 'react-icons/io5';
 import { FaRegBuilding } from 'react-icons/fa';
@@ -8,6 +7,17 @@ import { MdOutlineUpdate } from 'react-icons/md';
 import Button from './Button';
 import { Listing } from '@/types/listings';
 import { useListingsContext } from '@/contexts/ListingsContext';
+import { formatPrice } from '@/lib/utils';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+
+import { format } from 'date-fns';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import SavePost from './SavePost';
 
 interface ListingCardProps {
   listing: Listing;
@@ -16,6 +26,7 @@ interface ListingCardProps {
 const ListingCard = ({ listing }: ListingCardProps) => {
   const { setHoveredListingId } = useListingsContext();
   const coLiversCount = listing.coLivingDetails?.roommates?.length || 0;
+  const [index, setIndex] = useState(0);
 
   return (
     <div
@@ -23,36 +34,61 @@ const ListingCard = ({ listing }: ListingCardProps) => {
       onMouseEnter={() => setHoveredListingId(listing._id)}
       onMouseLeave={() => setHoveredListingId(null)}
     >
-      <div className='relative w-full sm:w-2/5 h-[200px] sm:h-[250px] md:h-[320px]'>
-        <Image
-          src={listing.photos[0] || '/assets/features_search.png'}
-          alt='Apartments image'
-          fill
-          style={{ objectFit: 'cover' }}
-          className='rounded-t-lg sm:rounded-l-lg sm:rounded-tr-none'
-        />
-        {/* <SavePost
-          listingId={listing._id}
-          customClass='absolute top-3 right-3 z-10'
-        /> */}
+      <div className='relative w-full sm:w-1/2 h-[200px] sm:h-[250px] md:h-[320px]'>
+        {listing.photos && listing.photos.length > 0 ? (
+          <Swiper
+            modules={[Navigation, Pagination]}
+            navigation
+            pagination={{ clickable: true }}
+            spaceBetween={10}
+            slidesPerView={1}
+            centeredSlides={true}
+            className='w-full h-full'
+            onSlideChange={(swiper) => setIndex(swiper.activeIndex)}
+          >
+            {listing.photos.map((photo, idx) => (
+              <SwiperSlide key={idx}>
+                <div className='relative w-full h-full'>
+                  <Image
+                    src={photo}
+                    alt={`Listing photo ${idx + 1}`}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    className='rounded-t-lg sm:rounded-l-lg sm:rounded-tr-none'
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        ) : (
+          <div className='relative w-full h-full'>
+            <Image
+              src='/assets/features_search.png'
+              alt='Default apartments image'
+              fill
+              style={{ objectFit: 'cover' }}
+              className='rounded-t-lg sm:rounded-l-lg sm:rounded-tr-none'
+            />
+          </div>
+        )}
       </div>
 
-      <div className='text-neutrals-black w-full sm:w-3/5 flex flex-col py-2 px-3 md:px-4'>
+      <div className='text-neutrals-black w-full sm:w-1/2 flex flex-col py-2 px-3 md:px-4'>
         <div className='flex-grow'>
           <div className='flex justify-between items-start'>
             <h2 className='text-xl md:text-2xl font-bold mb-1'>
-              {listing.price} {listing.currency}
+              {formatPrice(listing.price)} {listing.currency}
             </h2>
             <p className='text-xs text-neutrals-60 flex items-center gap-1 md:hidden'>
               <MdOutlineUpdate size={12} />
               <span>
-                {new Date(listing.updatedAt).toLocaleDateString('uk-UA')}
+                {format(new Date(listing.updatedAt), 'dd.MM.yyyy, HH:mm:ss')}
               </span>
             </p>
           </div>
           <p className='font-bold text-base md:text-lg'>{listing.street}</p>
           <p className='text-neutrals-60 mt-1 md:mt-2 text-sm'>
-            {listing.street}, {listing.city}
+            street {listing.street}, {listing.city}
           </p>
           <p className='mt-2 md:mt-3 text-xs md:text-sm line-clamp-3'>
             {listing.description}
