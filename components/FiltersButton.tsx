@@ -128,8 +128,6 @@ const FilterButton: React.FC = () => {
     '🍳 Kitchen',
   ];
 
-  const listingAgeOptions = ['Anytime', 'Last Week', 'Last Month'];
-
   // Доступні валюти
   const currencyOptions = ['UAH', 'USD', 'EUR'];
 

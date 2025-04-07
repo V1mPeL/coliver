@@ -30,7 +30,7 @@ export default function UserListings({
     return (
       <div className='text-center py-12'>
         <h2 className='text-2xl font-semibold mb-4'>
-          You don't have any listings yet
+          You don&apos;t have any listings yet
         </h2>
         <p className='text-gray-600 mb-6'>
           Create your first listing to start finding roommates
@@ -44,8 +44,6 @@ export default function UserListings({
       </div>
     );
   }
-
-  function handleDelete() {}
 
   return (
     <div className='w-full max-w-7xl mx-auto px-4 pt-16'>

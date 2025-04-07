@@ -17,7 +17,6 @@ import { format } from 'date-fns';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import SavePost from './SavePost';
 
 interface ListingCardProps {
   listing: Listing;
