@@ -5,11 +5,13 @@ import Spinner from '@/components/Spinner';
 import NoUser from '@/components/NoUser';
 import CreateListingForm from '@/components/forms/CreateListingForm';
 
-interface Props {
+// Use the correct page props interface
+interface PageProps {
   params: { listingId: string };
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
-export default async function EditListingPage({ params }: Props) {
+export default async function EditListingPage({ params }: PageProps) {
   const listingId = params.listingId;
 
   let isAuthenticated = false;
