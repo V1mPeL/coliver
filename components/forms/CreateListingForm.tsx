@@ -1,4 +1,3 @@
-// components/CreateListingForm.tsx
 'use client';
 
 import { z } from 'zod';
@@ -252,6 +251,16 @@ const CreateListingForm = ({ userId, listing }: Props) => {
     }
   };
 
+  // New function to handle photo deletion
+  const handleDeletePhoto = (
+    index: number,
+    fieldChange: (value: string[]) => void
+  ) => {
+    const updatedPhotos = uploadedPhotos.filter((_, i) => i !== index);
+    setUploadedPhotos(updatedPhotos);
+    fieldChange(updatedPhotos);
+  };
+
   const addRoommate = () => {
     const currentRoommates = form.getValues('coLivingDetails.roommates') || [];
     form.setValue('coLivingDetails.roommates', [
@@ -319,13 +328,12 @@ const CreateListingForm = ({ userId, listing }: Props) => {
                           <div className='flex gap-2'>
                             <FormControl>
                               <Input
-                                type='text' // Use type="text" to handle string input
+                                type='text'
                                 placeholder='750'
                                 className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                                value={field.value.toString()} // Convert number to string
+                                value={field.value.toString()}
                                 onChange={(e) => {
                                   const value = e.target.value;
-                                  // Allow empty string or valid number
                                   if (value === '' || !isNaN(Number(value))) {
                                     field.onChange(
                                       value === '' ? 0 : Number(value)
@@ -429,13 +437,12 @@ const CreateListingForm = ({ userId, listing }: Props) => {
                           </FormLabel>
                           <FormControl>
                             <Input
-                              type='text' // Use type="text" to handle string input
+                              type='text'
                               placeholder='2'
                               className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                              value={field.value.toString()} // Convert number to string
+                              value={field.value.toString()}
                               onChange={(e) => {
                                 const value = e.target.value;
-                                // Allow empty string or valid number
                                 if (value === '' || !isNaN(Number(value))) {
                                   field.onChange(
                                     value === '' ? 0 : Number(value)
@@ -459,13 +466,12 @@ const CreateListingForm = ({ userId, listing }: Props) => {
                           </FormLabel>
                           <FormControl>
                             <Input
-                              type='text' // Use type="text" to handle string input
+                              type='text'
                               placeholder='1'
                               className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                              value={field.value.toString()} // Convert number to string
+                              value={field.value.toString()}
                               onChange={(e) => {
                                 const value = e.target.value;
-                                // Allow empty string or valid number
                                 if (value === '' || !isNaN(Number(value))) {
                                   field.onChange(
                                     value === '' ? 1 : Number(value)
@@ -532,13 +538,12 @@ const CreateListingForm = ({ userId, listing }: Props) => {
                                   </FormLabel>
                                   <FormControl>
                                     <Input
-                                      type='text' // Use type="text" to handle string input
+                                      type='text'
                                       placeholder='25'
                                       className='w-full border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-1 focus:ring-primary-60 py-2 px-4'
-                                      value={roommate.age.toString()} // Convert number to string
+                                      value={roommate.age.toString()}
                                       onChange={(e) => {
                                         const value = e.target.value;
-                                        // Allow empty string or valid number
                                         if (
                                           value === '' ||
                                           !isNaN(Number(value))
@@ -852,7 +857,7 @@ const CreateListingForm = ({ userId, listing }: Props) => {
                               {uploadedPhotos.map((photo, index) => (
                                 <div
                                   key={index}
-                                  className='relative w-full h-24'
+                                  className='relative w-full h-24 group'
                                 >
                                   <Image
                                     src={photo}
@@ -861,6 +866,15 @@ const CreateListingForm = ({ userId, listing }: Props) => {
                                     objectFit='cover'
                                     className='rounded-lg'
                                   />
+                                  <button
+                                    type='button'
+                                    onClick={() =>
+                                      handleDeletePhoto(index, field.onChange)
+                                    }
+                                    className='absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity'
+                                  >
+                                    <IoTrashOutline size={16} />
+                                  </button>
                                 </div>
                               ))}
                             </div>

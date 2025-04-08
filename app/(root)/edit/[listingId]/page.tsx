@@ -7,12 +7,12 @@ import CreateListingForm from '@/components/forms/CreateListingForm';
 
 // Use the correct page props interface
 interface PageProps {
-  params: { listingId: string };
+  params: Promise<{ listingId: string }>;
   searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export default async function EditListingPage({ params }: PageProps) {
-  const listingId = params.listingId;
+  const { listingId } = await params;
 
   let isAuthenticated = false;
   let userId: string | null = null;
