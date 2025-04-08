@@ -14,14 +14,14 @@ const FilterButton: React.FC = () => {
     capacity: '',
     preferences: [] as string[],
     amenities: [] as string[],
-    currency: 'UAH', // Додали валюту за замовчуванням
+    currency: '', // Default to empty string for "All currencies"
   });
 
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  // Завантаження фільтрів з URL при ініціалізації
+  // Load filters from URL on initialization
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
 
@@ -35,11 +35,11 @@ const FilterButton: React.FC = () => {
       capacity: params.get('capacity') || '',
       preferences: params.get('preferences')?.split(',').filter(Boolean) || [],
       amenities: params.get('amenities')?.split(',').filter(Boolean) || [],
-      currency: params.get('currency') || 'UAH',
+      currency: params.get('currency') || '', // Empty string means "All"
     });
   }, [searchParams]);
 
-  // Обробка зміни фільтрів
+  // Handle filter changes
   const handleFilterChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -66,15 +66,17 @@ const FilterButton: React.FC = () => {
     }
   };
 
-  // Застосування фільтрів
+  // Apply filters
   const applyFilters = () => {
     const params = new URLSearchParams();
 
     Object.entries(filters).forEach(([key, value]) => {
       if (Array.isArray(value) && value.length > 0) {
         params.set(key, value.join(','));
-      } else if (value) {
+      } else if (value && key !== 'currency') {
         params.set(key, value.toString());
+      } else if (key === 'currency' && value) {
+        params.set(key, value.toString()); // Only set currency if a specific value is selected
       }
     });
 
@@ -82,7 +84,7 @@ const FilterButton: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  // Скидання фільтрів
+  // Clear filters
   const clearFilters = () => {
     setFilters({
       city: '',
@@ -94,14 +96,14 @@ const FilterButton: React.FC = () => {
       capacity: '',
       preferences: [],
       amenities: [],
-      currency: 'UAH',
+      currency: '', // Reset to "All"
     });
 
     router.push(pathname);
     setIsModalOpen(false);
   };
 
-  // Масиви опцій для чекбоксів
+  // Checkbox options
   const preferenceOptions = [
     '📸 Photography',
     '📚 Reading',
@@ -128,12 +130,17 @@ const FilterButton: React.FC = () => {
     '🍳 Kitchen',
   ];
 
-  // Доступні валюти
-  const currencyOptions = ['UAH', 'USD', 'EUR'];
+  // Currency options (including "All")
+  const currencyOptions = [
+    { value: '', label: 'All' },
+    { value: 'UAH', label: 'UAH' },
+    { value: 'USD', label: 'USD' },
+    { value: 'EUR', label: 'EUR' },
+  ];
 
   return (
     <>
-      {/* Кнопка відкриття фільтрів */}
+      {/* Filter button */}
       <button
         onClick={() => setIsModalOpen(true)}
         className='w-[150px] flex items-center justify-center gap-2 h-12 px-4 rounded-lg border border-neutrals-80 bg-neutrals-90 text-neutrals-black hover:bg-primary-main hover:text-neutrals-white transition-all duration-300'
@@ -141,11 +148,11 @@ const FilterButton: React.FC = () => {
         <span className='bodyB'>Filters</span>
       </button>
 
-      {/* Модальне вікно фільтрів */}
+      {/* Filter modal */}
       {isModalOpen && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50'>
           <div className='bg-white rounded-lg p-6 w-full max-w-md h-[500px] overflow-y-auto'>
-            {/* Заголовок модального вікна */}
+            {/* Modal header */}
             <div className='flex items-center justify-between mb-4'>
               <h2 className='text-xl font-semibold text-neutrals-black'>
                 Apply Filters
@@ -170,9 +177,9 @@ const FilterButton: React.FC = () => {
               </button>
             </div>
 
-            {/* Форма фільтрів */}
+            {/* Filter form */}
             <div className='mb-6 space-y-4'>
-              {/* Поле міста */}
+              {/* City field */}
               <div>
                 <label className='block text-neutrals-60 mb-1'>City</label>
                 <input
@@ -185,7 +192,7 @@ const FilterButton: React.FC = () => {
                 />
               </div>
 
-              {/* Поле вулиці */}
+              {/* Street field */}
               <div>
                 <label className='block text-neutrals-60 mb-1'>Street</label>
                 <input
@@ -198,10 +205,10 @@ const FilterButton: React.FC = () => {
                 />
               </div>
 
-              {/* Діапазон ціни з валютою */}
+              {/* Price range with currency */}
               <div>
                 <label className='block text-neutrals-60 mb-1'>
-                  Price ({filters.currency})
+                  Price ({filters.currency || 'Any'})
                 </label>
                 <div className='flex gap-2'>
                   <input
@@ -210,7 +217,7 @@ const FilterButton: React.FC = () => {
                     value={filters.priceMin}
                     onChange={handleFilterChange}
                     className='w-1/3 p-2 border border-neutrals-80 rounded'
-                    placeholder='Від'
+                    placeholder='From'
                   />
                   <input
                     type='number'
@@ -218,7 +225,7 @@ const FilterButton: React.FC = () => {
                     value={filters.priceMax}
                     onChange={handleFilterChange}
                     className='w-1/3 p-2 border border-neutrals-80 rounded'
-                    placeholder='До'
+                    placeholder='To'
                   />
                   <select
                     name='currency'
@@ -227,15 +234,15 @@ const FilterButton: React.FC = () => {
                     className='w-1/3 p-2 border border-neutrals-80 rounded'
                   >
                     {currencyOptions.map((curr) => (
-                      <option key={curr} value={curr}>
-                        {curr}
+                      <option key={curr.value} value={curr.value}>
+                        {curr.label}
                       </option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              {/* Діапазон поверхів */}
+              {/* Floor range */}
               <div>
                 <label className='block text-neutrals-60 mb-1'>Floor</label>
                 <div className='flex gap-2'>
@@ -245,7 +252,7 @@ const FilterButton: React.FC = () => {
                     value={filters.floorMin}
                     onChange={handleFilterChange}
                     className='w-1/2 p-2 border border-neutrals-80 rounded'
-                    placeholder='Від'
+                    placeholder='From'
                   />
                   <input
                     type='number'
@@ -253,12 +260,12 @@ const FilterButton: React.FC = () => {
                     value={filters.floorMax}
                     onChange={handleFilterChange}
                     className='w-1/2 p-2 border border-neutrals-80 rounded'
-                    placeholder='До'
+                    placeholder='To'
                   />
                 </div>
               </div>
 
-              {/* Поле кількості людей */}
+              {/* Capacity */}
               <div>
                 <label className='block text-neutrals-60 mb-1'>
                   Number of People
@@ -276,7 +283,7 @@ const FilterButton: React.FC = () => {
                 </select>
               </div>
 
-              {/* Вподобання */}
+              {/* Preferences */}
               <div>
                 <label className='block text-neutrals-60 mb-1'>
                   Preferences
@@ -296,7 +303,7 @@ const FilterButton: React.FC = () => {
                 ))}
               </div>
 
-              {/* Зручності */}
+              {/* Amenities */}
               <div>
                 <label className='block text-neutrals-60 mb-1'>Amenities</label>
                 {amenityOptions.map((amenity) => (
@@ -315,7 +322,7 @@ const FilterButton: React.FC = () => {
               </div>
             </div>
 
-            {/* Кнопки керування */}
+            {/* Action buttons */}
             <div className='flex justify-between'>
               <button
                 onClick={clearFilters}

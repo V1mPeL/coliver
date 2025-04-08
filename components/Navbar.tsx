@@ -153,17 +153,29 @@ const Navbar = () => {
             aria-label='Toggle menu'
           >
             <span
-              className={`block w-6 h-0.5 bg-neutrals-white transition-transform duration-300 ${
+              className={`block w-6 h-0.5 ${
+                pathname === '/' && !isScrolled
+                  ? 'bg-neutrals-white '
+                  : 'bg-neutrals-black'
+              } transition-transform duration-300 ${
                 isMenuOpen ? 'transform rotate-45 translate-y-2' : ''
               }`}
             ></span>
             <span
-              className={`block w-6 h-0.5 bg-neutrals-white transition-opacity duration-300 ${
+              className={`block w-6 h-0.5 ${
+                pathname === '/' && !isScrolled
+                  ? 'bg-neutrals-white '
+                  : 'bg-neutrals-black'
+              } transition-opacity duration-300 ${
                 isMenuOpen ? 'opacity-0' : 'opacity-100'
               }`}
             ></span>
             <span
-              className={`block w-6 h-0.5 bg-neutrals-white transition-transform duration-300 ${
+              className={`block w-6 h-0.5 ${
+                pathname === '/' && !isScrolled
+                  ? 'bg-neutrals-white '
+                  : 'bg-neutrals-black'
+              } transition-transform duration-300 ${
                 isMenuOpen ? 'transform -rotate-45 -translate-y-2' : ''
               }`}
             ></span>
