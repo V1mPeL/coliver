@@ -162,8 +162,8 @@ const CreateListingForm = ({ userId, listing }: Props) => {
         price: values.price,
         currency: values.currency,
         floor: values.floor,
-        preferences: values.preferences,
-        amenities: values.amenities,
+        preferences: values.preferences || [],
+        amenities: values.amenities || [],
         description: values.description,
         capacity: values.capacity,
         photos: photoUrls,
@@ -729,14 +729,17 @@ const CreateListingForm = ({ userId, listing }: Props) => {
                                   className='flex items-center space-x-2'
                                 >
                                   <Checkbox
-                                    checked={field.value.includes(
+                                    checked={(field.value || []).includes(
                                       `${preference.icon} ${preference.name}`
                                     )}
                                     onCheckedChange={(checked) => {
                                       const combinedValue = `${preference.icon} ${preference.name}`;
                                       const updatedPreferences = checked
-                                        ? [...field.value, combinedValue]
-                                        : field.value.filter(
+                                        ? [
+                                            ...(field.value || []),
+                                            combinedValue,
+                                          ]
+                                        : (field.value || []).filter(
                                             (p) => p !== combinedValue
                                           );
                                       field.onChange(updatedPreferences);
@@ -772,14 +775,17 @@ const CreateListingForm = ({ userId, listing }: Props) => {
                                   className='flex items-center space-x-2'
                                 >
                                   <Checkbox
-                                    checked={field.value.includes(
+                                    checked={(field.value || []).includes(
                                       `${amenity.icon} ${amenity.name}`
                                     )}
                                     onCheckedChange={(checked) => {
                                       const combinedValue = `${amenity.icon} ${amenity.name}`;
                                       const updatedAmenities = checked
-                                        ? [...field.value, combinedValue]
-                                        : field.value.filter(
+                                        ? [
+                                            ...(field.value || []),
+                                            combinedValue,
+                                          ]
+                                        : (field.value || []).filter(
                                             (a) => a !== combinedValue
                                           );
                                       field.onChange(updatedAmenities);
