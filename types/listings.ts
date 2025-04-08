@@ -33,7 +33,7 @@ export interface Listing {
   street: string;
   city: string;
   price: number;
-  currency: string;
+  currency: 'USD' | 'EUR' | 'UAH';
   floor: number;
   description: string;
   capacity: number;
