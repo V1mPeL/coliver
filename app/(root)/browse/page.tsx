@@ -1,6 +1,6 @@
 // app/browse/page.tsx
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import BigMap from '@/components/BigMap';
 import FiltersWidget from '@/components/FiltersWidget';
@@ -10,7 +10,8 @@ import { fetchListings } from '@/lib/actions/listing.actions';
 import Spinner from '@/components/Spinner';
 import { Listing } from '@/types/listings';
 
-const BrowsePage = () => {
+// Separate component that uses useSearchParams
+const BrowseContent = () => {
   const [initialListings, setInitialListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +22,6 @@ const BrowsePage = () => {
     const loadListings = async () => {
       setLoading(true);
       try {
-        // Extract filters from search params
         const filters = {
           city: searchParams.get('city') || undefined,
           street: searchParams.get('street') || undefined,
@@ -51,18 +51,16 @@ const BrowsePage = () => {
       }
     };
 
-    // Set default map visibility based on screen size
     const handleResize = () => {
       setShowMap(window.innerWidth >= 768);
     };
 
-    // Initialize on load
     handleResize();
     window.addEventListener('resize', handleResize);
     loadListings();
 
     return () => window.removeEventListener('resize', handleResize);
-  }, [searchParams]); // Re-run when searchParams change
+  }, [searchParams]);
 
   if (loading) {
     return (
@@ -84,7 +82,6 @@ const BrowsePage = () => {
     <ListingsContextProvider initialListings={initialListings}>
       <div className='w-full min-h-screen pt-16'>
         <div className='bg-white w-full mx-auto px-4 sm:px-6 md:px-10'>
-          {/* Map toggle button on mobile */}
           <div className='md:hidden flex justify-center my-3'>
             <button
               onClick={() => setShowMap(!showMap)}
@@ -95,7 +92,6 @@ const BrowsePage = () => {
           </div>
 
           <div className='w-full flex flex-col md:flex-row justify-between gap-6'>
-            {/* Listings */}
             <div
               className={`w-full md:w-1/2 pt-5 ${
                 showMap ? 'hidden md:block' : 'block'
@@ -104,7 +100,6 @@ const BrowsePage = () => {
               <FiltersWidget />
               <ListingsList listings={initialListings} />
             </div>
-            {/* Map */}
             <div
               className={`w-full md:w-1/2 h-[50vh] md:h-[calc(100vh-4rem)] ${
                 showMap ? 'block' : 'hidden md:block'
@@ -116,6 +111,21 @@ const BrowsePage = () => {
         </div>
       </div>
     </ListingsContextProvider>
+  );
+};
+
+// Main page component with Suspense
+const BrowsePage = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className='w-full min-h-screen pt-16 flex justify-center items-center'>
+          <Spinner />
+        </div>
+      }
+    >
+      <BrowseContent />
+    </Suspense>
   );
 };
 
