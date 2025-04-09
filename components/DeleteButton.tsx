@@ -25,7 +25,6 @@ const DeleteButton = ({
       toast.error('Failed to delete listing. Please try again.');
       console.error('Delete error:', error);
     }
-    // console.log('delete');
   }
 
   return (

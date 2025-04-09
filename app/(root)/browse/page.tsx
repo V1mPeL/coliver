@@ -1,4 +1,3 @@
-// app/browse/page.tsx
 'use client';
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';

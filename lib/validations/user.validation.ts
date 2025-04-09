@@ -1,3 +1,4 @@
+// lib/validations/user.validation.ts
 import * as z from 'zod';
 
 export const userValidation = z.object({

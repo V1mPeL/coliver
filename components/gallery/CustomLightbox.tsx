@@ -20,7 +20,7 @@ const CustomLightbox = ({
 }: CustomLightboxProps) => {
   const [isOpen, setIsOpen] = useState(true);
 
-  // Закриття по кліку поза слайдером
+  // Close on overlay click
   const handleOverlayClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (e.target === e.currentTarget) {
@@ -31,7 +31,7 @@ const CustomLightbox = ({
     [onClose]
   );
 
-  // Закриття по клавіші Escape
+  // Close on Escape button
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -43,10 +43,10 @@ const CustomLightbox = ({
     return () => window.removeEventListener('keydown', handleEsc);
   }, [onClose]);
 
-  // Закриття після анімації
+  // Close after animation
   useEffect(() => {
     if (!isOpen) {
-      const timer = setTimeout(onClose, 300); // Час анімації
+      const timer = setTimeout(onClose, 300);
       return () => clearTimeout(timer);
     }
   }, [isOpen, onClose]);

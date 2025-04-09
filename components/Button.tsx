@@ -1,4 +1,3 @@
-// components/Button.tsx
 import Link from 'next/link';
 import { ReactNode } from 'react';
 
@@ -7,7 +6,7 @@ interface ButtonProps {
   onClick?: () => void;
   href?: string;
   mailto?: string;
-  tel?: string; // Додаємо новий параметр для телефонного номера
+  tel?: string;
   disabled?: boolean;
   className?: string;
   type?: 'button' | 'submit' | 'reset';
@@ -18,12 +17,11 @@ const Button = ({
   onClick,
   href,
   mailto,
-  tel, // Додаємо новий параметр
+  tel,
   disabled = false,
   className = '',
   type = 'button',
 }: ButtonProps) => {
-  // Якщо є tel, href або mailto, створюємо посилання
   if (tel || href || mailto) {
     let linkHref = '';
 

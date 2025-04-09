@@ -257,7 +257,7 @@ export default function ProfilePage() {
                         placeholder='example@gmail.com'
                         className='w-full md:w-[300px] border border-primary-60 rounded-md text-neutrals-black dark:text-neutrals-white focus:outline-none focus:ring-0 focus:border-primary-60 py-2 px-4'
                         {...field}
-                        disabled // Email зазвичай не дозволяють змінювати
+                        disabled
                       />
                     </FormControl>
                     <FormMessage className='text-error-main text-sm mt-1' />

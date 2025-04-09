@@ -1,4 +1,3 @@
-// components/ShareDialog.tsx
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -31,14 +30,12 @@ export default function ShareDialog({ listingId }: ShareDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
 
-  // Обчислюємо shareUrl після монтування компонента
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setShareUrl(`${window.location.origin}/listing/${listingId}`);
     }
   }, [listingId]);
 
-  // Закриття по клавіші Escape
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -51,7 +48,7 @@ export default function ShareDialog({ listingId }: ShareDialogProps) {
     return () => window.removeEventListener('keydown', handleEsc);
   }, [isOpen]);
 
-  // Закриття по кліку поза вікном
+  // Closing by clicking outside the dialog
   const handleOverlayClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       if (e.target === e.currentTarget) {
@@ -61,7 +58,7 @@ export default function ShareDialog({ listingId }: ShareDialogProps) {
     []
   );
 
-  // Функція копіювання посилання
+  // Copy link
   const handleCopy = () => {
     navigator.clipboard
       .writeText(shareUrl)
@@ -75,7 +72,7 @@ export default function ShareDialog({ listingId }: ShareDialogProps) {
 
   return (
     <>
-      {/* Кнопка для відкриття діалогу */}
+      {/* Open dialog button */}
       <button
         onClick={() => setIsOpen(true)}
         aria-label='Share listing'
@@ -84,21 +81,20 @@ export default function ShareDialog({ listingId }: ShareDialogProps) {
         <IoMdShare />
       </button>
 
-      {/* Діалогове вікно */}
+      {/* Dialog */}
       {isOpen && (
         <div
           className='fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center'
           onClick={handleOverlayClick}
         >
           <div className='bg-white dark:bg-neutrals-20 rounded-lg p-6 w-full max-w-md shadow-lg'>
-            {/* Заголовок і кнопка закриття */}
             <div className='flex justify-between items-center mb-6'>
               <h2 className='text-xl font-bold text-neutrals-black dark:text-neutrals-white'>
                 Share this listing
               </h2>
             </div>
 
-            {/* Поле з посиланням і кнопка копіювання */}
+            {/* Link and copy button */}
             <div className='mb-6'>
               <label
                 htmlFor='share-url'
@@ -123,7 +119,7 @@ export default function ShareDialog({ listingId }: ShareDialogProps) {
               </div>
             </div>
 
-            {/* Кнопки для поширення в соціальних мережах */}
+            {/* Social media share */}
             <div className='mb-6'>
               <h3 className='text-sm font-medium text-neutrals-30 mb-3'>
                 Share via
@@ -202,7 +198,6 @@ export default function ShareDialog({ listingId }: ShareDialogProps) {
               </div>
             </div>
 
-            {/* Кнопка закриття */}
             <div className='flex justify-end'>
               <button
                 onClick={() => setIsOpen(false)}

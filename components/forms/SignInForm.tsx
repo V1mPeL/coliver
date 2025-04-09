@@ -60,7 +60,7 @@ const SignUpForm = () => {
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className='space-y-6 flex flex-col items-center'
-            noValidate // Вимкнення стандартної валідації HTML5
+            noValidate
           >
             <FormField
               control={form.control}
@@ -75,7 +75,7 @@ const SignUpForm = () => {
                       <Input
                         type='email'
                         placeholder='example@gmail.com'
-                        autoComplete='off' // Вимкнення автозаповнення для email
+                        autoComplete='off'
                         className='w-[300px] max-[768px]:w-full md:w-[500px] border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-0 focus:border-primary-60 py-2 px-4 autofill:bg-transparent invalid:bg-transparent' // Додано autofill:bg-transparent і invalid:bg-transparent
                         {...field}
                       />
@@ -99,7 +99,7 @@ const SignUpForm = () => {
                       <Input
                         type='password'
                         placeholder='Password'
-                        autoComplete='new-password' // Вимкнення автозаповнення для password
+                        autoComplete='new-password'
                         className='w-[300px] max-[768px]:w-full md:w-[500px] border border-primary-60 rounded-md text-neutrals-black focus:outline-none focus:ring-0 focus:border-primary-60 py-2 px-4 autofill:bg-transparent invalid:bg-transparent' // Додано autofill:bg-transparent і invalid:bg-transparent
                         {...field}
                       />
@@ -110,7 +110,6 @@ const SignUpForm = () => {
               )}
             />
 
-            {/* <div className='flex gap-4 items-center'> */}
             <Button
               type='submit'
               disabled={isSubmitting}
@@ -118,7 +117,6 @@ const SignUpForm = () => {
             >
               Login
             </Button>
-            {/* </div> */}
 
             <div className='mt-4 text-center'>
               <p className='text-neutrals-black text-sm'>

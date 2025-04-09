@@ -1,3 +1,4 @@
+// lib/actions/listing.actions.ts
 'use server';
 
 import Listing from '../models/listing.model';
@@ -89,7 +90,7 @@ export async function createListing({
       photos,
       coordinates,
       userId,
-      coLivingDetails, // Додано нове поле
+      coLivingDetails,
     });
 
     await User.findByIdAndUpdate(userId, {
@@ -205,7 +206,6 @@ export async function fetchUserListings(userId: string) {
     const listings = await Listing.find({ userId });
     const user = await User.findById(userId);
 
-    // console.log(user.savedListings.toString());
     const savedListings = await Listing.find({
       _id: { $in: user.savedListings },
     });

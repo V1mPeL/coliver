@@ -54,7 +54,7 @@ interface Listing {
   preferences: string[];
   coLivingDetails?: CoLivingDetails;
   coordinates: { lat: number; lng: number };
-  createdAt: Date; // Додаємо поле createdAt до типу Listing
+  createdAt: Date;
 }
 
 interface PageProps {

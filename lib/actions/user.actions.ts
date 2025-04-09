@@ -1,3 +1,4 @@
+// lib/actions/user.actions.ts
 'use server';
 
 import User from '../models/user.model';
@@ -39,7 +40,7 @@ type LoginUserResponse =
   | {
       success: false;
       error: string;
-      errorField: 'email' | 'password'; // Тільки "email" або "password"
+      errorField: 'email' | 'password'; // Only "email" or "password"
     };
 
 export async function createUser({
@@ -69,7 +70,7 @@ export async function createUser({
       { expiresIn: '7d' }
     );
 
-    // Зберігаємо токен у HttpOnly cookies
+    // Saving token in HttpOnly cookies
     const cookieStore = await cookies();
     cookieStore.set('token', token, {
       httpOnly: true,
@@ -111,7 +112,7 @@ export async function getUser() {
       userId: string;
     };
 
-    const user = await User.findById(decoded.userId).select('-password'); // Виключаємо пароль
+    const user = await User.findById(decoded.userId).select('-password'); // Exclude password from the result
     if (!user) {
       throw new Error('User not found');
     }

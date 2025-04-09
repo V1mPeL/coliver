@@ -1,3 +1,4 @@
+// lib/models/listing.model.ts
 import mongoose, { Schema } from 'mongoose';
 
 const listingSchema = new mongoose.Schema(
