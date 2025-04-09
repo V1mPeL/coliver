@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 import {
   addToFavourite,
   removeFromFavourite,
@@ -21,6 +22,7 @@ const SavePost = ({
   customClass,
 }: SavePostProps) => {
   const [isSaved, setIsSaved] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setIsSaved(userSavedListings.includes(listingId));
@@ -33,12 +35,16 @@ const SavePost = ({
         if (result.success) {
           setIsSaved(false);
           toast.success(result.message);
+          // Force refresh of the current route
+          router.refresh();
         }
       } else {
         const result = await addToFavourite(listingId, userId);
         if (result.success) {
           setIsSaved(true);
           toast.success(result.message);
+          // Force refresh of the current route
+          router.refresh();
         }
       }
     } catch (error: any) {

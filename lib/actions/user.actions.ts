@@ -274,6 +274,7 @@ export async function addToFavourite(listingId: string, userId: string) {
     });
 
     revalidatePath('/favourites');
+    revalidatePath('/my-listings');
     return { success: true, message: 'Added to favourites' };
   } catch (error: any) {
     throw new Error(`Unable to add listing to favourites: ${error.message}`);
@@ -294,6 +295,7 @@ export async function removeFromFavourite(listingId: string, userId: string) {
     });
 
     revalidatePath('/favourites');
+    revalidatePath('/my-listings');
     return { success: true, message: 'Removed from favourites' };
   } catch (error: any) {
     throw new Error(

@@ -203,8 +203,15 @@ export async function fetchUserListings(userId: string) {
 
   try {
     const listings = await Listing.find({ userId });
+    const user = await User.findById(userId);
 
-    return listings;
+    // console.log(user.savedListings.toString());
+    const savedListings = await Listing.find({
+      _id: { $in: user.savedListings },
+    });
+    console.log(savedListings);
+
+    return { listings, savedListings };
   } catch (error: any) {
     throw new Error(`Unable to fetch listing ${error.message}`);
   }

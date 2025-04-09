@@ -4,6 +4,7 @@ import { IoPeopleSharp } from 'react-icons/io5';
 import { FaRegBuilding } from 'react-icons/fa';
 
 import DeleteButton from './DeleteButton';
+import SavePost from './SavePost';
 
 interface Listing {
   _id: string;
@@ -22,32 +23,42 @@ interface Listing {
 export default function UserListings({
   listings,
   userId,
+  isSaved = false,
+  savedListingsIds,
 }: {
   listings: Listing[];
   userId: string;
+  isSaved?: boolean;
+  savedListingsIds?: string[];
 }) {
   if (!listings || listings.length === 0) {
     return (
       <div className='text-center py-12'>
         <h2 className='text-2xl font-semibold mb-4'>
-          You don&apos;t have any listings yet
+          You don&apos;t have {isSaved ? 'saved' : 'any'} listings yet
         </h2>
-        <p className='text-gray-600 mb-6'>
-          Create your first listing to start finding roommates
-        </p>
-        <Link
-          href='/listing/create'
-          className='bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition'
-        >
-          Create a Listing
-        </Link>
+        {!isSaved && (
+          <>
+            <p className='text-gray-600 mb-6'>
+              Create your first listing to start finding roommates
+            </p>
+            <Link
+              href='/listing/create'
+              className='bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition'
+            >
+              Create a Listing
+            </Link>
+          </>
+        )}
       </div>
     );
   }
 
   return (
     <div className='w-full max-w-7xl mx-auto px-4 pt-16'>
-      <h1 className='text-3xl font-bold mb-8'>Your Listings</h1>
+      <h1 className='text-3xl font-bold mb-8'>
+        {isSaved ? 'Saved' : 'Your'} Listings
+      </h1>
 
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {listings.map((listing) => (
@@ -122,18 +133,29 @@ export default function UserListings({
                 >
                   View Details
                 </Link>
-                <div className=' flex items-center gap-3'>
-                  <Link
-                    href={`/edit/${listing._id}`}
-                    className='text-blue-600 hover:underline'
-                  >
-                    Edit
-                  </Link>
-                  <DeleteButton
-                    listingId={listing._id.toString()}
-                    userId={userId}
-                  />
-                </div>
+                {!isSaved && (
+                  <div className=' flex items-center gap-3'>
+                    <Link
+                      href={`/edit/${listing._id}`}
+                      className='text-blue-600 hover:underline'
+                    >
+                      Edit
+                    </Link>
+                    <DeleteButton
+                      listingId={listing._id.toString()}
+                      userId={userId}
+                    />
+                  </div>
+                )}
+                {isSaved && (
+                  <div>
+                    <SavePost
+                      listingId={listing._id.toString()}
+                      userId={userId}
+                      userSavedListings={savedListingsIds || []}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
